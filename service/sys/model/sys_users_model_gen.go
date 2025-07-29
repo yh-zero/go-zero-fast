@@ -49,7 +49,6 @@ type (
 		Status       uint64         `db:"status"`        // 状态:1正常/2禁用
 		Username     string         `db:"username"`      // 登录名
 		Password     string         `db:"password"`      // 密码（bcrypt加密）
-		Salt         string         `db:"salt"`          // 加密盐值
 		Nickname     string         `db:"nickname"`      // 昵称
 		Description  sql.NullString `db:"description"`   // 个人简介
 		HomePath     string         `db:"home_path"`     // 登录首页
@@ -148,8 +147,8 @@ func (m *defaultSysUsersModel) Insert(ctx context.Context, data *SysUsers) (sql.
 	goZeroFastSysUsersNicknameKey := fmt.Sprintf("%s%v", cacheGoZeroFastSysUsersNicknamePrefix, data.Nickname)
 	goZeroFastSysUsersUsernameKey := fmt.Sprintf("%s%v", cacheGoZeroFastSysUsersUsernamePrefix, data.Username)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, sysUsersRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Id, data.Status, data.Username, data.Password, data.Salt, data.Nickname, data.Description, data.HomePath, data.Mobile, data.Email, data.Avatar, data.DepartmentId, data.DeletedAt)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, sysUsersRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Id, data.Status, data.Username, data.Password, data.Nickname, data.Description, data.HomePath, data.Mobile, data.Email, data.Avatar, data.DepartmentId, data.DeletedAt)
 	}, goZeroFastSysUsersIdKey, goZeroFastSysUsersNicknameKey, goZeroFastSysUsersUsernameKey)
 	return ret, err
 }
@@ -165,7 +164,7 @@ func (m *defaultSysUsersModel) Update(ctx context.Context, newData *SysUsers) er
 	goZeroFastSysUsersUsernameKey := fmt.Sprintf("%s%v", cacheGoZeroFastSysUsersUsernamePrefix, data.Username)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, sysUsersRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, newData.Status, newData.Username, newData.Password, newData.Salt, newData.Nickname, newData.Description, newData.HomePath, newData.Mobile, newData.Email, newData.Avatar, newData.DepartmentId, newData.DeletedAt, newData.Id)
+		return conn.ExecCtx(ctx, query, newData.Status, newData.Username, newData.Password, newData.Nickname, newData.Description, newData.HomePath, newData.Mobile, newData.Email, newData.Avatar, newData.DepartmentId, newData.DeletedAt, newData.Id)
 	}, goZeroFastSysUsersIdKey, goZeroFastSysUsersNicknameKey, goZeroFastSysUsersUsernameKey)
 	return err
 }

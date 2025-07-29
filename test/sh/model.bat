@@ -1,4 +1,4 @@
-@REM 项目根目录  运行例子： .\test\sh\model.bat user sys-users
+@REM 项目根目录  运行例子： .\test\sh\model.bat sys sys_users
 @REM  第一个参数目录名  第二个参数是表名
 set name=%1
 set tableName=%2
