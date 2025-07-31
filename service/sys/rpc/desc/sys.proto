@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+message UsernameReq {
+  string username = 1;
+}
+
+message UserInfo {
+  optional uint64 id = 1;
+  optional uint64 created_at = 2;
+  optional uint64 updated_at = 3;
+  optional uint64 status = 4;
+  optional string username = 5;
+  optional string password = 6;
+  optional string nickname = 7;
+  optional string description = 8;
+  optional string home_path = 9;
+  repeated uint64 role_ids = 10;
+  optional string mobile = 11;
+  optional string email = 12;
+  optional string avatar = 13;
+  optional uint64 department_id = 14;
+  repeated uint64 position_ids = 15;
+  repeated string role_codes = 16;
+  repeated string role_name = 17;
+  optional string department_name = 18;
+}
+
+message UsernameRes {
+    UserInfo UserInfo = 1;
+}
+
+message TokenInfo {
+  optional uint64 id = 1;
+  optional uint64 status = 2;
+  optional uint64 user_id = 3;
+  optional string username = 4;
+  optional string token = 5;
+  optional string source = 6;
+  optional uint64 expired_at = 7;
+  optional uint64 created_at = 8;
+  optional uint64 updated_at = 9;
+}
+
+message TokenInfoReq {
+    TokenInfo TokenInfo = 1;
+}
+
+message TokenInfoRes {
+  uint64 id = 1;
+  string token = 2;
+}
+
+service User {
+  // 根据用户名获取用户详情
+  rpc getUserByUsername (UsernameReq) returns (UsernameRes);
+
+}
+
+service Token {
+  // 生成Token
+  rpc createToken(TokenInfoReq) returns (TokenInfoRes);
+
+}

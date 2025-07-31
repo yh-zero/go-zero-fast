@@ -1,68 +1,20 @@
-@server(
-    jwt: Auth
-    group: user
-    middleware: Authority
+syntax = "v1"
+
+import (
+	"user_struct.api"
 )
 
-service sys {
-    // Create user information | 创建用户
-    @handler createUser
-    post /user/create (UserInfo) returns (BaseMsgResp)
-}
-
-service sys-api {
-    // Create user information | 创建用户
-    @handler createUser1
-    post /user/create2 (UserInfo) returns (BaseMsgResp)
-}
-
-type (
-    UserInfo {
-
-
-        // Status | 状态
-        Status *uint32 `json:"status,optional" validate:"omitempty,lt=20"`
-
-        // Username | 用户名
-        Username *string `json:"username,optional" validate:"omitempty,max=50"`
-
-        // Nickname | 昵称
-        Nickname *string `json:"nickname,optional" validate:"omitempty,max=40"`
-
-        // Password | 密码
-        Password *string `json:"password,optional" validate:"omitempty,min=6"`
-
-        // Description | 描述
-        Description *string `json:"description,optional" validate:"omitempty,max=100"`
-
-        // HomePath | 首页
-        HomePath *string `json:"homePath,optional" validate:"omitempty,max=70"`
-
-        // RoleId | 角色ID
-        RoleIds []uint64 `json:"roleIds,optional"`
-
-        // Mobile | 手机号
-        Mobile *string `json:"mobile,optional" validate:"omitempty,max=18"`
-
-        // Email | 邮箱
-        Email *string `json:"email,optional" validate:"omitempty,max=80"`
-
-        // Avatar | 头像地址
-        Avatar *string `json:"avatar,optional" validate:"omitempty,max=300"`
-
-        // Department ID | 部门ID
-        DepartmentId *uint64 `json:"departmentId,optional,omitempty"`
-
-        // Position ID | 职位ID
-        PositionIds []uint64 `json:"positionId,optional,omitempty"`
-    }
-
-    // The basic response without data | 基础不带数据信息
-    BaseMsgResp {
-    // Error code | 错误代码
-    Code int    `json:"code"`
-
-    // Message | 提示信息
-    Msg  string `json:"msg"`
-}
+@server (
+	prefix: /v1/sys
+	group:  usernoauth
 )
+service Ysy {
+	@doc "系统用户登录"
+	@handler Login
+	post /user/login (LoginReq) returns (LoginRes)
+
+	@doc "获取验证码"
+	@handler getCaptcha
+	get /captcha returns (CaptchaRes)
+}
+

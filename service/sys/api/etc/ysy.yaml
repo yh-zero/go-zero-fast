@@ -1,0 +1,14 @@
+Name: Ysy
+Host: 0.0.0.0
+Port: 6100
+
+SysRPC:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: sys.rpc
+  NonBlock: true
+
+JwtAuth:
+  AccessSecret: sD5fG2hJkL9pQw3R-go-zero-fast
+  AccessExpire: 64800

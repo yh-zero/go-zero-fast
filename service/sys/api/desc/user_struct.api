@@ -1,0 +1,31 @@
+syntax = "v1"
+
+type (
+    LoginInfo {
+        UserId  uint64  `json:"userId"` // 用户id
+        Token   string  `json:"token"`  // 和前端交互的token
+        Expire  uint64  `json:"expire"` // 过期时间戳
+    }
+
+    LoginReq {
+        Username    string `json:"username" validate:"required,max=15"`         // 登录名称
+        Password    string `json:"password" validate:"required,max=30,min=6"`   // 密码
+        CaptchaId   string `json:"captchaId"  validate:"required,len=20"`       // 验证码id
+        Captcha     string `json:"captcha" validate:"required,len=5"`           //验证码
+    }
+
+    LoginRes {
+        LoginInfo
+    }
+
+    CaptchaInfo {
+        CaptchaId string `json:"captchaId"`
+        ImgPath   string `json:"imgPath"`
+    }
+
+    CaptchaRes {
+        CaptchaInfo
+    }
+
+
+)
