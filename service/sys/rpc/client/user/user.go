@@ -14,16 +14,20 @@ import (
 )
 
 type (
+	IDReq        = pb.IDReq
 	TokenInfo    = pb.TokenInfo
 	TokenInfoReq = pb.TokenInfoReq
 	TokenInfoRes = pb.TokenInfoRes
 	UserInfo     = pb.UserInfo
+	UserInfoRes  = pb.UserInfoRes
 	UsernameReq  = pb.UsernameReq
 	UsernameRes  = pb.UsernameRes
 
 	User interface {
 		// 根据用户名获取用户详情
 		GetUserByUsername(ctx context.Context, in *UsernameReq, opts ...grpc.CallOption) (*UsernameRes, error)
+		// 获取用户详细信息
+		GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error)
 	}
 
 	defaultUser struct {
@@ -41,4 +45,10 @@ func NewUser(cli zrpc.Client) User {
 func (m *defaultUser) GetUserByUsername(ctx context.Context, in *UsernameReq, opts ...grpc.CallOption) (*UsernameRes, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.GetUserByUsername(ctx, in, opts...)
+}
+
+// 获取用户详细信息
+func (m *defaultUser) GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.GetUserInfoById(ctx, in, opts...)
 }

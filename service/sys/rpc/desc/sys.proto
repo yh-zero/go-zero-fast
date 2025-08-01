@@ -54,9 +54,20 @@ message TokenInfoRes {
   string token = 2;
 }
 
+message IDReq {
+  uint64 id = 1;
+}
+
+message UserInfoRes {
+    UserInfo UserInfo = 1;
+}
+
 service User {
   // 根据用户名获取用户详情
   rpc getUserByUsername (UsernameReq) returns (UsernameRes);
+
+  //获取用户详细信息
+  rpc GetUserInfoById (IDReq) returns (UserInfoRes);
 
 }
 

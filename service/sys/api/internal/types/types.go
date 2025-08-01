@@ -28,3 +28,18 @@ type LoginReq struct {
 type LoginRes struct {
 	LoginInfo
 }
+
+type UserBaseIDInfoRes struct {
+	UserInfo
+}
+
+type UserInfo struct {
+	Id             uint64   `json:"userId"`                  // 用户id
+	Username       string   `json:"username"`                //用户名
+	Nickname       string   `json:"nickname"`                //用户的昵称
+	Avatar         string   `json:"avatar"`                  // 用户的头像路径
+	HomePath       string   `json:"homePath"`                // 用户登陆后进入的首页
+	Description    string   `json:"desc"`                    // 用户的描述信息
+	RoleName       []string `json:"roleName"`                // 用户的角色名称
+	DepartmentName string   `json:"departmentName,optional"` // 部门名称
+}

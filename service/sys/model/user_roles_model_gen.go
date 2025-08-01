@@ -73,7 +73,7 @@ func (m *defaultUserRolesModel) Delete(ctx context.Context, id int64) error {
 }
 
 func (m *defaultUserRolesModel) FindOne(ctx context.Context, id int64) (*UserRoles, error) {
-	goZeroFastUserRolesIdKey := fmt.Sprintf("%s%v", cacheGoZeroFastUserRolesIdPrefix, id)
+		goZeroFastUserRolesIdKey := fmt.Sprintf("%s%v", cacheGoZeroFastUserRolesIdPrefix, id)
 	var resp UserRoles
 	err := m.QueryRowCtx(ctx, &resp, goZeroFastUserRolesIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userRolesRows, m.table)

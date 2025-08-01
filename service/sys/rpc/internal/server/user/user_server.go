@@ -28,3 +28,9 @@ func (s *UserServer) GetUserByUsername(ctx context.Context, in *pb.UsernameReq) 
 	l := userlogic.NewGetUserByUsernameLogic(ctx, s.svcCtx)
 	return l.GetUserByUsername(in)
 }
+
+// 获取用户详细信息
+func (s *UserServer) GetUserInfoById(ctx context.Context, in *pb.IDReq) (*pb.UserInfoRes, error) {
+	l := userlogic.NewGetUserInfoByIdLogic(ctx, s.svcCtx)
+	return l.GetUserInfoById(in)
+}

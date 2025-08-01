@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	user "go-zero-fast/service/sys/api/internal/handler/user"
 	usernoauth "go-zero-fast/service/sys/api/internal/handler/usernoauth"
 	"go-zero-fast/service/sys/api/internal/svc"
 
@@ -13,6 +14,22 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authority},
+			[]rest.Route{
+				{
+					// 根据token获取用户信息
+					Method:  http.MethodGet,
+					Path:    "/user/info",
+					Handler: user.GetUserInfoHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+		rest.WithPrefix("/v1/sys"),
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{

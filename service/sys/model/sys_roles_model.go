@@ -16,6 +16,7 @@ type (
 	SysRolesModel interface {
 		sysRolesModel
 		FindCodesByIds(ctx context.Context, ids []uint64) ([]string, error)
+		FindRoleNamesByIds(ctx context.Context, ids []uint64) ([]string, error)
 	}
 
 	customSysRolesModel struct {
@@ -47,6 +48,27 @@ func (m *customSysRolesModel) FindCodesByIds(ctx context.Context, ids []uint64) 
 			return nil, err
 		}
 		result = append(result, code)
+	}
+
+	return result, nil
+}
+func (m *customSysRolesModel) FindRoleNamesByIds(ctx context.Context, ids []uint64) ([]string, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	result := make([]string, 0, len(ids))
+	for _, id := range ids {
+		var roleName string
+		query := fmt.Sprintf("select name from %s where id = ?", m.table)
+		err := m.QueryRowNoCacheCtx(ctx, &roleName, query, id)
+		if err != nil {
+			if err == sqlc.ErrNotFound {
+				continue // 跳过不存在的记录
+			}
+			return nil, err
+		}
+		result = append(result, roleName)
 	}
 
 	return result, nil

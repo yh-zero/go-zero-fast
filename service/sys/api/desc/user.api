@@ -18,3 +18,18 @@ service Ysy {
 	get /captcha returns (CaptchaRes)
 }
 
+
+@server(
+	prefix: /v1/sys
+	jwt: JwtAuth
+	group: user
+	middleware: Authority
+)
+
+service Ysy {
+	@doc "根据token获取用户信息"
+	@handler getUserInfo
+	get /user/info returns (UserBaseIDInfoRes)
+
+}
+

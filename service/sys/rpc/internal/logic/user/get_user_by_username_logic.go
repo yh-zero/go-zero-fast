@@ -40,7 +40,7 @@ func (l *GetUserByUsernameLogic) GetUserByUsername(in *pb.UsernameReq) (*pb.User
 		return nil, fmt.Errorf("查询用户失败: %w", err)
 	}
 
-	roleIds, err := l.svcCtx.UserRolesModel.FindRoleIdsByUserId(l.ctx, int64(userInfo.Id))
+	roleIds, err := l.svcCtx.UserRolesModel.FindRoleIdsByUserId(l.ctx, userInfo.Id)
 	if err != nil {
 		return nil, errors.New("该用户没有相关的角色信息")
 	}
@@ -55,11 +55,6 @@ func (l *GetUserByUsernameLogic) GetUserByUsername(in *pb.UsernameReq) (*pb.User
 		}
 		roleCodes = codes
 	}
-
-	if err != nil {
-		return nil, errors.New("没有找到角色代码")
-	}
-
 	createdAt := uint64(userInfo.CreatedAt.UnixMilli())
 	updatedAt := uint64(userInfo.UpdatedAt.UnixMilli())
 

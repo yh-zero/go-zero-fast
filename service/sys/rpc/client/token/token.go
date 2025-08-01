@@ -14,10 +14,12 @@ import (
 )
 
 type (
+	IDReq        = pb.IDReq
 	TokenInfo    = pb.TokenInfo
 	TokenInfoReq = pb.TokenInfoReq
 	TokenInfoRes = pb.TokenInfoRes
 	UserInfo     = pb.UserInfo
+	UserInfoRes  = pb.UserInfoRes
 	UsernameReq  = pb.UsernameReq
 	UsernameRes  = pb.UsernameRes
 

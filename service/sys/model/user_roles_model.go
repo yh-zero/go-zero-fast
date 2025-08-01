@@ -14,7 +14,7 @@ type (
 	// and implement the added methods in customUserRolesModel.
 	UserRolesModel interface {
 		userRolesModel
-		FindRoleIdsByUserId(ctx context.Context, userId int64) ([]uint64, error) // 新增方法
+		FindRoleIdsByUserId(ctx context.Context, userId uint64) ([]uint64, error) // 新增方法
 	}
 
 	customUserRolesModel struct {
@@ -30,7 +30,7 @@ func NewUserRolesModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Optio
 }
 
 // 在 defaultUserRolesModel 结构体中实现新方法
-func (m *customUserRolesModel) FindRoleIdsByUserId(ctx context.Context, userId int64) ([]uint64, error) {
+func (m *customUserRolesModel) FindRoleIdsByUserId(ctx context.Context, userId uint64) ([]uint64, error) {
 	var roleIds []uint64
 	query := fmt.Sprintf("select `role_id` from %s where `user_id` = ?", m.table)
 	err := m.QueryRowsNoCacheCtx(ctx, &roleIds, query, userId)
