@@ -1,0 +1,20 @@
+syntax = "v1"
+
+import (
+    "menu_struct.api"
+)
+
+@server(
+    prefix: /v1/sys
+    jwt: JwtAuth
+    group: menu
+    middleware: Authority
+)
+
+service Ysy {
+    @doc "获取菜单列表 -- 对应的用户角色的权限"
+    @handler getMenuListByRole
+    get /menu/role/list returns (MenuListRes)
+
+}
+

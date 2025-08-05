@@ -47,7 +47,7 @@ func (c *userClient) GetUserByUsername(ctx context.Context, in *UsernameReq, opt
 
 func (c *userClient) GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error) {
 	out := new(UserInfoRes)
-	err := c.cc.Invoke(ctx, "/pb.User/GetUserInfoById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/pb.User/getUserInfoById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func _User_GetUserInfoById_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.User/GetUserInfoById",
+		FullMethod: "/pb.User/getUserInfoById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).GetUserInfoById(ctx, req.(*IDReq))
@@ -136,7 +136,7 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_GetUserByUsername_Handler,
 		},
 		{
-			MethodName: "GetUserInfoById",
+			MethodName: "getUserInfoById",
 			Handler:    _User_GetUserInfoById_Handler,
 		},
 	},
@@ -226,6 +226,94 @@ var Token_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "createToken",
 			Handler:    _Token_CreateToken_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "service/sys/rpc/desc/sys.proto",
+}
+
+// MenuClient is the client API for Menu service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type MenuClient interface {
+	// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
+	GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error)
+}
+
+type menuClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMenuClient(cc grpc.ClientConnInterface) MenuClient {
+	return &menuClient{cc}
+}
+
+func (c *menuClient) GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error) {
+	out := new(MenuInfoList)
+	err := c.cc.Invoke(ctx, "/pb.Menu/getMenuListByRoleId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MenuServer is the server API for Menu service.
+// All implementations must embed UnimplementedMenuServer
+// for forward compatibility
+type MenuServer interface {
+	// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
+	GetMenuListByRoleId(context.Context, *IDReq) (*MenuInfoList, error)
+	mustEmbedUnimplementedMenuServer()
+}
+
+// UnimplementedMenuServer must be embedded to have forward compatible implementations.
+type UnimplementedMenuServer struct {
+}
+
+func (UnimplementedMenuServer) GetMenuListByRoleId(context.Context, *IDReq) (*MenuInfoList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMenuListByRoleId not implemented")
+}
+func (UnimplementedMenuServer) mustEmbedUnimplementedMenuServer() {}
+
+// UnsafeMenuServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MenuServer will
+// result in compilation errors.
+type UnsafeMenuServer interface {
+	mustEmbedUnimplementedMenuServer()
+}
+
+func RegisterMenuServer(s grpc.ServiceRegistrar, srv MenuServer) {
+	s.RegisterService(&Menu_ServiceDesc, srv)
+}
+
+func _Menu_GetMenuListByRoleId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MenuServer).GetMenuListByRoleId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Menu/getMenuListByRoleId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MenuServer).GetMenuListByRoleId(ctx, req.(*IDReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Menu_ServiceDesc is the grpc.ServiceDesc for Menu service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Menu_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "pb.Menu",
+	HandlerType: (*MenuServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "getMenuListByRoleId",
+			Handler:    _Menu_GetMenuListByRoleId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

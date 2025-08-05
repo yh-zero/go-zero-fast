@@ -1,0 +1,6 @@
+type Model {
+    ID        int64  `json:"ID,optional"`
+    CreatedAt string `json:"CreatedAt,optional"`
+    UpdatedAt string `json:"UpdatedAt,optional"`
+    DeletedAt string `json:"DeletedAt,optional"`
+}

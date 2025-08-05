@@ -42,5 +42,10 @@ type (
         UserInfo // 用户信息
     }
 
+    // 权限码： 用于前端权限控制
+    PermCodeRes {
+        Data []uint64 `json:"data"`
+    }
+
 
 )

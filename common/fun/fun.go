@@ -22,6 +22,12 @@ func GetStringLocal(s string) *string {
 	return &s
 }
 
+// int 转成 bool
+func IntToBoolPtr(val int64) *bool {
+	b := val == 1
+	return &b
+}
+
 // 专门处理字符串指针转换
 func NullStringToPtr(ns sql.NullString) *string {
 	if ns.Valid {

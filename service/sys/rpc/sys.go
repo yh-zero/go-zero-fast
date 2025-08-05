@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"go-zero-fast/service/sys/rpc/internal/config"
+	menuServer "go-zero-fast/service/sys/rpc/internal/server/menu"
 	tokenServer "go-zero-fast/service/sys/rpc/internal/server/token"
 	userServer "go-zero-fast/service/sys/rpc/internal/server/user"
 	"go-zero-fast/service/sys/rpc/internal/svc"
@@ -29,6 +30,7 @@ func main() {
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		pb.RegisterUserServer(grpcServer, userServer.NewUserServer(ctx))
 		pb.RegisterTokenServer(grpcServer, tokenServer.NewTokenServer(ctx))
+		pb.RegisterMenuServer(grpcServer, menuServer.NewMenuServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

@@ -43,10 +43,10 @@ type (
 	}
 
 	UserRoles struct {
-		Id        int64     `db:"id"`
-		UserId    int64     `db:"user_id"`
-		RoleId    int64     `db:"role_id"`
-		CreatedAt time.Time `db:"created_at"`
+		Id        int64     `db:"id"`         // id
+		UserId    int64     `db:"user_id"`    // 用户id
+		RoleId    int64     `db:"role_id"`    // 用户对应的角色id
+		CreatedAt time.Time `db:"created_at"` // 创建时间
 	}
 )
 
@@ -73,7 +73,7 @@ func (m *defaultUserRolesModel) Delete(ctx context.Context, id int64) error {
 }
 
 func (m *defaultUserRolesModel) FindOne(ctx context.Context, id int64) (*UserRoles, error) {
-		goZeroFastUserRolesIdKey := fmt.Sprintf("%s%v", cacheGoZeroFastUserRolesIdPrefix, id)
+	goZeroFastUserRolesIdKey := fmt.Sprintf("%s%v", cacheGoZeroFastUserRolesIdPrefix, id)
 	var resp UserRoles
 	err := m.QueryRowCtx(ctx, &resp, goZeroFastUserRolesIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userRolesRows, m.table)

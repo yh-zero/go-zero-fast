@@ -8,11 +8,11 @@ import (
 	"go-zero-fast/service/sys/api/internal/svc"
 )
 
-// 根据token获取用户信息
-func GetUserInfoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+// 获取用户权限码
+func GetUserPermCodeHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		l := user.NewGetUserInfoLogic(r.Context(), svcCtx)
-		resp, err := l.GetUserInfo()
+		l := user.NewGetUserPermCodeLogic(r.Context(), svcCtx)
+		resp, err := l.GetUserPermCode()
 		result.HttpResult(r, w, resp, err)
 
 	}

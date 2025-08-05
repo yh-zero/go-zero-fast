@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
+	"go-zero-fast/common/fun"
 	"go-zero-fast/service/sys/rpc/internal/svc"
 	"go-zero-fast/service/sys/rpc/pb"
 
@@ -47,27 +48,34 @@ func (l *GetUserInfoByIdLogic) GetUserInfoById(in *pb.IDReq) (*pb.UserInfoRes, e
 		}
 	}
 
-	//return &pb.UserInfoRes{
-	//	UserInfo: &pb.UserInfo{
-	//		Id:             &userInfo.Id,
-	//		CreatedAt:      fun.Int64ToUint64Ptr(userInfo.CreatedAt.UnixMilli()),
-	//		UpdatedAt:      fun.Int64ToUint64Ptr(userInfo.UpdatedAt.UnixMilli()),
-	//		Status:         &userInfo.Status,
-	//		Username:       &userInfo.Username,
-	//		Password:       &userInfo.Password,
-	//		Nickname:       &userInfo.Nickname,
-	//		Description:    fun.NullStringToPtr(userInfo.Description),
-	//		HomePath:       &userInfo.HomePath,
-	//		Mobile:         fun.NullStringToPtr(userInfo.Mobile),
-	//		Email:          fun.NullStringToPtr(userInfo.Email),
-	//		Avatar:         fun.NullStringToPtr(userInfo.Avatar),
-	//		DepartmentId:   &userInfo.DepartmentId,
-	//		PositionIds:    &userInfo.PositionIds,
-	//		RoleName:       roleNames,
-	//		RoleIds:        roleIds,
-	//		DepartmentName: &userInfo.DepartmentName, // 部门名称
-	//	},
-	//}, nil
+	departments, err := l.svcCtx.SysDepartmentsModel.FindOne(l.ctx, userInfo.DepartmentId)
+	fmt.Println("============ departments", departments)
+	fmt.Println("============ departments", departments.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UserInfoRes{
+		UserInfo: &pb.UserInfo{
+			Id:             &userInfo.Id,
+			CreatedAt:      fun.Int64ToUint64Ptr(userInfo.CreatedAt.UnixMilli()),
+			UpdatedAt:      fun.Int64ToUint64Ptr(userInfo.UpdatedAt.UnixMilli()),
+			Status:         &userInfo.Status,
+			Username:       &userInfo.Username,
+			Password:       &userInfo.Password,
+			Nickname:       &userInfo.Nickname,
+			Description:    fun.NullStringToPtr(userInfo.Description),
+			HomePath:       &userInfo.HomePath,
+			Mobile:         fun.NullStringToPtr(userInfo.Mobile),
+			Email:          fun.NullStringToPtr(userInfo.Email),
+			Avatar:         fun.NullStringToPtr(userInfo.Avatar),
+			DepartmentId:   &userInfo.DepartmentId,
+			RoleName:       roleNames,
+			RoleIds:        roleIds,
+			DepartmentName: &departments.Name, // 部门名称
+			//PositionIds:    &userInfo.PositionIds,
+		},
+	}, nil
 
 	return nil, nil
 }

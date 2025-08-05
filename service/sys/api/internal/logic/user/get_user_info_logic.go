@@ -2,6 +2,9 @@ package user
 
 import (
 	"context"
+	"fmt"
+	"go-zero-fast/common/ctxJwt"
+	"go-zero-fast/service/sys/rpc/pb"
 
 	"go-zero-fast/service/sys/api/internal/svc"
 	"go-zero-fast/service/sys/api/internal/types"
@@ -25,7 +28,22 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserInfoLogic) GetUserInfo() (resp *types.UserBaseIDInfoRes, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	jwtUserId := ctxJwt.GetJwtDataUserId(l.ctx)
+	userInfoRpc, err := l.svcCtx.UserRPC.GetUserInfoById(l.ctx, &pb.IDReq{Id: jwtUserId})
+	fmt.Println("========= userInfoRpc", userInfoRpc)
+	if err != nil {
+		return nil, err
+	}
+	return &types.UserBaseIDInfoRes{
+		UserInfo: types.UserInfo{
+			Id:             *userInfoRpc.UserInfo.Id,
+			Username:       *userInfoRpc.UserInfo.Username,
+			Nickname:       *userInfoRpc.UserInfo.Nickname,
+			Avatar:         *userInfoRpc.UserInfo.Avatar,
+			HomePath:       *userInfoRpc.UserInfo.HomePath,
+			Description:    *userInfoRpc.UserInfo.Description,
+			RoleName:       userInfoRpc.UserInfo.RoleName,
+			DepartmentName: *userInfoRpc.UserInfo.DepartmentName,
+		},
+	}, nil
 }

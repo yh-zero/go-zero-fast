@@ -1,0 +1,41 @@
+syntax = "v1"
+
+import "all_struct.api"
+
+type (
+	MenuInfo {
+		Model
+		Meta        Meta   `json:"meta"`                    // 菜单meta数据
+
+		Trans       string `json:"trans,optional"`          // 国际化展示名称
+		Level       uint64 `json:"level,optional"`          // 菜单层级
+		ParentId    uint64 `json:"parentId,optional"`       // 父级菜单ID
+		Path        string `json:"path,optional"`           // 菜单访问路径
+		Name        string `json:"name,optional"`           // 菜单名称
+		Redirect    string `json:"redirect,optional"`       // 跳转地址
+		Component   string `json:"component,optional"`      // 组件地址
+		Sort        uint64 `json:"sort,optional"`           // 排序
+		Disabled    bool   `json:"disabled,optional"`       // 是否启用
+		MenuType    uint64 `json:"menuType,optional"`       // 菜单类型
+		ServiceName string `json:"serviceName,optional"`    // 服务名称
+		Permission  string `json:"permission,optional"`     // 权限标识
+	}
+	Meta {
+		Title              string `json:"title" validate:"max=50"`                                     // 菜单显示名
+		Icon               string `json:"icon" validate:"max=50"`                                      // 菜单图标
+		HideMenu           bool   `json:"hideMenu" validate:"omitempty,boolean"`                       // 隐藏菜单
+		HideBreadcrumb     bool   `json:"hideBreadcrumb,optional" validate:"omitempty,boolean"`        // 隐藏面包屑
+		IgnoreKeepAlive    bool   `json:"ignoreKeepAlive,optional" validate:"omitempty,boolean"`       // 不缓存Tab
+		HideTab            bool   `json:"hideTab,optional" validate:"omitempty,boolean"`               // 当前路由不在标签页显示
+		FrameSrc           string `json:"frameSrc,optional"`                                           // 内嵌iframe的地址
+		CarryParam         bool   `json:"carryParam,optional" validate:"omitempty,boolean"`            // 如果该路由会携带参数，且需要在tab页上面显示。则需要设置为true
+		HideChildrenInMenu bool   `json:"hideChildrenInMenu,optional" validate:"omitempty,boolean"`    // 隐藏所有子菜单
+		Affix              bool   `json:"affix,optional" validate:"omitempty,boolean"`                 // 是否固定标签
+		DynamicLevel       uint64 `json:"dynamicLevel" validate:"number,lt=30"`                        // 动态路由可打开Tab页数
+		RealPath           string `json:"realPath,optional"`                                           // 动态路由的实际Path, 即去除路由的动态部分
+	}
+	MenuListRes {
+		List []MenuInfo `json:"data"`
+	}
+)
+

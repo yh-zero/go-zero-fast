@@ -15,6 +15,10 @@ import (
 
 type (
 	IDReq        = pb.IDReq
+	IDSReq       = pb.IDSReq
+	MenuInfo     = pb.MenuInfo
+	MenuInfoList = pb.MenuInfoList
+	Meta         = pb.Meta
 	TokenInfo    = pb.TokenInfo
 	TokenInfoReq = pb.TokenInfoReq
 	TokenInfoRes = pb.TokenInfoRes

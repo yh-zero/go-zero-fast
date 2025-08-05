@@ -6,6 +6,7 @@ package handler
 import (
 	"net/http"
 
+	menu "go-zero-fast/service/sys/api/internal/handler/menu"
 	user "go-zero-fast/service/sys/api/internal/handler/user"
 	usernoauth "go-zero-fast/service/sys/api/internal/handler/usernoauth"
 	"go-zero-fast/service/sys/api/internal/svc"
@@ -19,10 +20,32 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authority},
 			[]rest.Route{
 				{
+					// 获取菜单列表 -- 对应的用户角色的权限
+					Method:  http.MethodGet,
+					Path:    "/menu/role/list",
+					Handler: menu.GetMenuListByRoleHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+		rest.WithPrefix("/v1/sys"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authority},
+			[]rest.Route{
+				{
 					// 根据token获取用户信息
 					Method:  http.MethodGet,
 					Path:    "/user/info",
 					Handler: user.GetUserInfoHandler(serverCtx),
+				},
+				{
+					// 获取用户权限码
+					Method:  http.MethodGet,
+					Path:    "/user/perm",
+					Handler: user.GetUserPermCodeHandler(serverCtx),
 				},
 			}...,
 		),

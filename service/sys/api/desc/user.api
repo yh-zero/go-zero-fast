@@ -31,5 +31,9 @@ service Ysy {
 	@handler getUserInfo
 	get /user/info returns (UserBaseIDInfoRes)
 
+	@doc "获取用户权限码"
+	@handler getUserPermCode
+	get /user/perm returns (PermCodeRes)
+
 }
 
