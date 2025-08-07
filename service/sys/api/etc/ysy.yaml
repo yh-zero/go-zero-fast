@@ -11,7 +11,7 @@ SysRPC:
 
 JwtAuth:
   AccessSecret: sD5fG2hJkL9pQw3R-go-zero-fast
-  AccessExpire: 648000
+  AccessExpire: 864000
 #  AccessExpire: 64800
 
 BizRedis:
@@ -20,7 +20,7 @@ BizRedis:
   Type: node
 
 DB:
-  DataSource: root:123456@tcp(127.0.0.1:3306)/goZero-admin?parseTime=true&loc=Local
+  DataSource: root:123456@tcp(127.0.0.1:3306)/goZero-admin?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai
   MaxIdleConns: 10
   MaxOpenConns: 100
   ConnMaxLifetime: 3600
@@ -38,3 +38,6 @@ CasbinConf:
     [matchers]
     m = r.sub == p.sub && myFun(r.obj,p.obj) && r.act == p.act
 #    m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
+
+# 是否开启验证码
+IsCaptcha: false

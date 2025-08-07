@@ -9,25 +9,26 @@ message UsernameReq {
 }
 
 message UserInfo {
-  optional uint64 id = 1;
-  optional uint64 status = 2;
-  optional string username = 3;
-  optional string password = 4;
-  optional string nickname = 5;
-  optional string description = 6;
-  optional string homePath = 7;
-  repeated uint64 roleIds = 8;
-  optional string mobile = 9;
-  optional string email = 10;
-  optional string avatar = 11;
-  optional uint64 departmentId = 12;
-  repeated uint64 positionIds = 13;
-  repeated string roleCodes = 14;
-  repeated string roleName = 15;
-  optional string departmentName = 16;
+//  optional uint64 id = 1; // optional 可以设置不能为空
+    uint64 id = 1;
+    uint64 status = 2;
+    string username = 3;
+    string password = 4;
+    string nickname = 5;
+    string description = 6;
+    string homePath = 7;
+    repeated uint64 roleIds = 8;
+    string mobile = 9;
+    string email = 10;
+    string avatar = 11;
+    uint64 departmentId = 12;
+    repeated uint64 positionIds = 13;
+    repeated string roleCodes = 14;
+    repeated string roleName = 15;
+    string departmentName = 16;
 
-  optional uint64 createdAt = 17;
-  optional uint64 updatedAt = 18;
+    uint64 createdAt = 17;
+    uint64 updatedAt = 18;
 }
 
 message UsernameRes {
@@ -35,15 +36,15 @@ message UsernameRes {
 }
 
 message TokenInfo {
-  optional uint64 id = 1;
-  optional uint64 status = 2;
-  optional uint64 userId = 3;
-  optional string username = 4;
-  optional string token = 5;
-  optional string source = 6;
-  optional uint64 expiredAt = 7;
-  optional uint64 createdAt = 8;
-  optional uint64 updatedAt = 9;
+   uint64 id = 1;
+   uint64 status = 2;
+   uint64 userId = 3;
+   string username = 4;
+   string token = 5;
+   string source = 6;
+   uint64 expiredAt = 7;
+   uint64 createdAt = 8;
+   uint64 updatedAt = 9;
 }
 
 message TokenInfoReq {
@@ -68,38 +69,38 @@ message UserInfoRes {
 }
 
 message MenuInfo {
-  optional uint64 id = 1;
-  optional uint64 level = 2;
-  optional uint64 parentId = 3;
-  optional string path = 4;
-  optional string name = 5;
-  optional string redirect = 6;
-  optional string component = 7;
-  optional uint64 sort = 8;
-  optional bool disabled = 9;
-  optional uint64 menuType = 10;
-  optional string serviceName = 11;
-  optional string permission = 12;
-  optional Meta meta = 13;
+   uint64 id = 1;
+   uint64 level = 2;
+   uint64 parentId = 3;
+   string path = 4;
+   string name = 5;
+   string redirect = 6;
+   string component = 7;
+   uint64 sort = 8;
+   bool disabled = 9;
+   uint64 menuType = 10;
+   string serviceName = 11;
+   string permission = 12;
+   Meta meta = 13;
 
-  optional uint64 createdAt = 14;
-  optional uint64 updatedAt = 15;
-  optional uint64 deletedAt = 16;
+   uint64 createdAt = 14;
+   uint64 updatedAt = 15;
+   uint64 deletedAt = 16;
 }
 
 message Meta {
-  optional string title = 1;
-  optional string icon = 2;
-  optional bool hideMenu = 3;
-  optional bool hideBreadcrumb = 4;
-  optional bool ignoreKeepAlive = 5;
-  optional bool hideTab = 6;
-  optional string frameSrc = 7;
-  optional bool carryParam = 8;
-  optional bool hideChildrenInMenu = 9;
-  optional bool affix = 10;
-  optional uint64 dynamicLevel = 11;
-  optional string realPath = 12;
+   string title = 1;
+   string icon = 2;
+   bool hideMenu = 3;
+   bool hideBreadcrumb = 4;
+   bool ignoreKeepAlive = 5;
+   bool hideTab = 6;
+   string frameSrc = 7;
+   bool carryParam = 8;
+   bool hideChildrenInMenu = 9;
+   bool affix = 10;
+   uint64 dynamicLevel = 11;
+   string realPath = 12;
 }
 
 message MenuInfoList {

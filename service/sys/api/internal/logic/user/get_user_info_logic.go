@@ -36,14 +36,14 @@ func (l *GetUserInfoLogic) GetUserInfo() (resp *types.UserBaseIDInfoRes, err err
 	}
 	return &types.UserBaseIDInfoRes{
 		UserInfo: types.UserInfo{
-			Id:             *userInfoRpc.UserInfo.Id,
-			Username:       *userInfoRpc.UserInfo.Username,
-			Nickname:       *userInfoRpc.UserInfo.Nickname,
-			Avatar:         *userInfoRpc.UserInfo.Avatar,
-			HomePath:       *userInfoRpc.UserInfo.HomePath,
-			Description:    *userInfoRpc.UserInfo.Description,
+			Id:             userInfoRpc.UserInfo.Id,
+			Username:       userInfoRpc.UserInfo.Username,
+			Nickname:       userInfoRpc.UserInfo.Nickname,
+			Avatar:         userInfoRpc.UserInfo.Avatar,
+			HomePath:       userInfoRpc.UserInfo.HomePath,
+			Description:    userInfoRpc.UserInfo.Description,
 			RoleName:       userInfoRpc.UserInfo.RoleName,
-			DepartmentName: *userInfoRpc.UserInfo.DepartmentName,
+			DepartmentName: userInfoRpc.UserInfo.DepartmentName,
 		},
 	}, nil
 }

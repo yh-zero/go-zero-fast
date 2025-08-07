@@ -55,25 +55,23 @@ func (l *GetUserByUsernameLogic) GetUserByUsername(in *pb.UsernameReq) (*pb.User
 		}
 		roleCodes = codes
 	}
-	createdAt := uint64(userInfo.CreatedAt.UnixMilli())
-	updatedAt := uint64(userInfo.UpdatedAt.UnixMilli())
 
 	return &pb.UsernameRes{
 		UserInfo: &pb.UserInfo{
-			Id:           &userInfo.Id,
-			CreatedAt:    &createdAt,
-			UpdatedAt:    &updatedAt,
-			Status:       &userInfo.Status,
-			Username:     &userInfo.Username,
-			Password:     &userInfo.Password,
-			Nickname:     &userInfo.Nickname,
-			Description:  fun.NullStringToPtr(userInfo.Description),
-			HomePath:     &userInfo.HomePath,
+			Id:           userInfo.Id,
+			CreatedAt:    uint64(userInfo.CreatedAt.UnixMilli()),
+			UpdatedAt:    uint64(userInfo.UpdatedAt.UnixMilli()),
+			Status:       userInfo.Status,
+			Username:     userInfo.Username,
+			Password:     userInfo.Password,
+			Nickname:     userInfo.Nickname,
+			Description:  fun.NullStringToString(userInfo.Description),
+			HomePath:     userInfo.HomePath,
 			RoleIds:      roleIds,
-			Mobile:       fun.NullStringToPtr(userInfo.Mobile),
-			Email:        &userInfo.HomePath,
-			Avatar:       &userInfo.HomePath,
-			DepartmentId: &userInfo.DepartmentId,
+			Mobile:       fun.NullStringToString(userInfo.Mobile),
+			Email:        userInfo.HomePath,
+			Avatar:       userInfo.HomePath,
+			DepartmentId: userInfo.DepartmentId,
 			RoleCodes:    roleCodes,
 		},
 	}, nil

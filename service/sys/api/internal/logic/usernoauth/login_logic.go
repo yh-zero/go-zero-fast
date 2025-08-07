@@ -32,14 +32,15 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error) {
-	driver := base64Captcha.NewDriverDigit(captchaImgHeight, captchaImgWidth, captchaImgLength, 0.1, 10)
-	cp := base64Captcha.NewCaptcha(driver, store)
-	ok := cp.Verify(req.CaptchaId, req.Captcha, true)
-	if !ok {
-		logx.Errorf("验证码获取失败! error: %v", err)
-		return nil, xerr.NewErrCode(xerr.CAPTCHA_ERROR)
+	if l.svcCtx.Config.IsCaptcha {
+		driver := base64Captcha.NewDriverDigit(captchaImgHeight, captchaImgWidth, captchaImgLength, 0.1, 10)
+		cp := base64Captcha.NewCaptcha(driver, store)
+		ok := cp.Verify(req.CaptchaId, req.Captcha, true)
+		if !ok {
+			logx.Errorf("验证码获取失败! error: %v", err)
+			return nil, xerr.NewErrCode(xerr.CAPTCHA_ERROR)
+		}
 	}
-	fmt.Println("======== ok ,", ok)
 
 	userInfoRPC, err := l.svcCtx.UserRPC.GetUserByUsername(l.ctx, &pb.UsernameReq{Username: req.Username})
 	fmt.Println("======== userInfoRPC", userInfoRPC)
@@ -48,12 +49,12 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 		return nil, err
 	}
 
-	if userInfoRPC.UserInfo.Status != nil && *userInfoRPC.UserInfo.Status != 1 {
+	if userInfoRPC.UserInfo.Status != 1 {
 		logx.Errorf("账号已冻结 error: %v", err)
 		return nil, xerr.NewErrCode(xerr.ACCOUNT_FREEZE_ERROR)
 	}
 
-	err = fun.CheckPassword(req.Password, *userInfoRPC.UserInfo.Password)
+	err = fun.CheckPassword(req.Password, userInfoRPC.UserInfo.Password)
 	if err != nil {
 		logx.Errorf("密码错误 error: %v", err)
 		return nil, xerr.NewErrCode(xerr.USER_PASSWORD_ERROR)
@@ -65,11 +66,11 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 		RoleIds: userInfoRPC.UserInfo.RoleIds,
 		//RoleId:       getFirstRoleId(userInfoRPC.UserInfo.RoleIds),
 		RoleId:       userInfoRPC.UserInfo.RoleIds[0],
-		DepartmentId: *userInfoRPC.UserInfo.DepartmentId,
-		UserId:       *userInfoRPC.UserInfo.Id,
-		//Username: *userInfoRPC.UserInfo.Username,
-		//ID:       *userInfoRPC.UserInfo.Id,
-		//NickName: *userInfoRPC.UserInfo.Nickname,
+		DepartmentId: userInfoRPC.UserInfo.DepartmentId,
+		UserId:       userInfoRPC.UserInfo.Id,
+		//Username: userInfoRPC.UserInfo.Username,
+		//ID:       userInfoRPC.UserInfo.Id,
+		//NickName: userInfoRPC.UserInfo.Nickname,
 	})
 	fmt.Println("============ accessToken", accessToken)
 	if err != nil {
@@ -78,15 +79,16 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 	}
 
 	// 把token 存到数据库 用于记录
+	// l.svcCtx.Config.JwtAuth.AccessExpire = 864000
 	expiredAt := time.Now().Add(time.Second * time.Duration(l.svcCtx.Config.JwtAuth.AccessExpire)).UnixMilli()
 	_, err = l.svcCtx.TokenRPC.CreateToken(l.ctx, &pb.TokenInfoReq{
 		TokenInfo: &pb.TokenInfo{
 			Status:    userInfoRPC.UserInfo.Status, // 暂时用 用户的状态 输入
 			UserId:    userInfoRPC.UserInfo.Id,
 			Username:  userInfoRPC.UserInfo.Username,
-			Token:     &accessToken,
-			Source:    fun.GetStringLocal("local"),
-			ExpiredAt: fun.Int64ToUint64Ptr(expiredAt),
+			Token:     accessToken,
+			Source:    "local",
+			ExpiredAt: uint64(expiredAt),
 		},
 	})
 	if err != nil {
@@ -97,7 +99,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 
 	return &types.LoginRes{
 		LoginInfo: types.LoginInfo{
-			UserId: *userInfoRPC.UserInfo.Id,
+			UserId: userInfoRPC.UserInfo.Id,
 			Token:  accessToken,
 			Expire: uint64(expiredAt),
 		},

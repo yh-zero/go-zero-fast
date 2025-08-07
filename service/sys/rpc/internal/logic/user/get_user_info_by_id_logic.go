@@ -57,23 +57,23 @@ func (l *GetUserInfoByIdLogic) GetUserInfoById(in *pb.IDReq) (*pb.UserInfoRes, e
 
 	return &pb.UserInfoRes{
 		UserInfo: &pb.UserInfo{
-			Id:             &userInfo.Id,
-			CreatedAt:      fun.Int64ToUint64Ptr(userInfo.CreatedAt.UnixMilli()),
-			UpdatedAt:      fun.Int64ToUint64Ptr(userInfo.UpdatedAt.UnixMilli()),
-			Status:         &userInfo.Status,
-			Username:       &userInfo.Username,
-			Password:       &userInfo.Password,
-			Nickname:       &userInfo.Nickname,
-			Description:    fun.NullStringToPtr(userInfo.Description),
-			HomePath:       &userInfo.HomePath,
-			Mobile:         fun.NullStringToPtr(userInfo.Mobile),
-			Email:          fun.NullStringToPtr(userInfo.Email),
-			Avatar:         fun.NullStringToPtr(userInfo.Avatar),
-			DepartmentId:   &userInfo.DepartmentId,
+			Id:             userInfo.Id,
+			CreatedAt:      uint64(userInfo.CreatedAt.UnixMilli()),
+			UpdatedAt:      uint64(userInfo.UpdatedAt.UnixMilli()),
+			Status:         userInfo.Status,
+			Username:       userInfo.Username,
+			Password:       userInfo.Password,
+			Nickname:       userInfo.Nickname,
+			Description:    fun.NullStringToString(userInfo.Description),
+			HomePath:       userInfo.HomePath,
+			Mobile:         fun.NullStringToString(userInfo.Mobile),
+			Email:          fun.NullStringToString(userInfo.Email),
+			Avatar:         fun.NullStringToString(userInfo.Avatar),
+			DepartmentId:   userInfo.DepartmentId,
 			RoleName:       roleNames,
 			RoleIds:        roleIds,
-			DepartmentName: &departments.Name, // 部门名称
-			//PositionIds:    &userInfo.PositionIds,
+			DepartmentName: departments.Name, // 部门名称
+			//PositionIds:   userInfo.PositionIds,
 		},
 	}, nil
 

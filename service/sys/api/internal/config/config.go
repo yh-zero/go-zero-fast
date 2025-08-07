@@ -24,4 +24,5 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
+	IsCaptcha bool
 }

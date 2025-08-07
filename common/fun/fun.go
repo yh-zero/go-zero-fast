@@ -4,15 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
-func Uint64PtrToTime(ts *uint64) time.Time {
-	if ts == nil {
-		return time.Time{} // 返回零值（0001-01-01 00:00:00）
+func NullStringToString(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
 	}
-	return time.UnixMilli(int64(*ts)) // 转换为 time.Time
+	return ""
 }
+
 func Int64ToUint64Ptr(v int64) *uint64 {
 	u := uint64(v)
 	return &u
@@ -23,17 +23,8 @@ func GetStringLocal(s string) *string {
 }
 
 // int 转成 bool
-func IntToBoolPtr(val int64) *bool {
-	b := val == 1
-	return &b
-}
-
-// 专门处理字符串指针转换
-func NullStringToPtr(ns sql.NullString) *string {
-	if ns.Valid {
-		return &ns.String
-	}
-	return nil
+func IntToBool(n int64) bool {
+	return n != 0
 }
 
 // HashPassword 使用 bcrypt 对密码进行加密
