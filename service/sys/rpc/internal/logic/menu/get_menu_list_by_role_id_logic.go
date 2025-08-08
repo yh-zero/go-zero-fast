@@ -2,6 +2,7 @@ package menulogic
 
 import (
 	"context"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"go-zero-fast/common/fun"
@@ -63,6 +64,7 @@ func (l *GetMenuListByRoleIdLogic) GetMenuListByRoleId(in *pb.IDReq) (*pb.MenuIn
 			continue
 		}
 
+		fmt.Println("------------------ mmmm", m.Id)
 		resp.MenuInfo = append(resp.MenuInfo, &pb.MenuInfo{
 
 			Id:          uint64(m.Id),

@@ -66,10 +66,10 @@ type Meta struct {
 }
 
 type Model struct {
-	ID        int64  `json:"ID,optional"`
-	CreatedAt string `json:"CreatedAt,optional"`
-	UpdatedAt string `json:"UpdatedAt,optional"`
-	DeletedAt string `json:"DeletedAt,optional"`
+	ID        int64  `json:"id,optional"`
+	CreatedAt string `json:"createdAt,optional"`
+	UpdatedAt string `json:"updatedAt,optional"`
+	DeletedAt string `json:"deletedAt,optional"`
 }
 
 type PermCodeRes struct {
