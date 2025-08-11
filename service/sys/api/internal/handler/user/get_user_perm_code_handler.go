@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
 	"go-zero-fast/common/result"
@@ -13,6 +14,7 @@ func GetUserPermCodeHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := user.NewGetUserPermCodeLogic(r.Context(), svcCtx)
 		resp, err := l.GetUserPermCode()
+		fmt.Println("------------ GetUserPermCodeHandler", err)
 		result.HttpResult(r, w, resp, err)
 
 	}

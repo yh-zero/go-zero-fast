@@ -37,31 +37,7 @@ func (l CasbinConf) NewCasbin(dsn string) (*casbin.SyncedCachedEnforcer, error) 
 	once.Do(func() {
 		adapter, err := gormadapter.NewAdapter("mysql", dsn, true)
 		logx.Must(err)
-
-		var text string
-		fmt.Println("---------- l.ModelText ", l.ModelText)
-		if l.ModelText == "" {
-			text = `
-		[request_definition]
-		r = sub, obj, act
-		
-		[policy_definition]
-		p = sub, obj, act
-		
-		[role_definition]
-		g = _, _
-		
-		[policy_effect]
-		e = some(where (p.eft == allow))
-		
-		[matchers]
-		m = r.sub == p.sub && myFun(r.obj,p.obj) && r.act == p.act
-		`
-		} else {
-			text = l.ModelText
-		}
-
-		m, err := model.NewModelFromString(text)
+		m, err := model.NewModelFromString(l.ModelText)
 		if err != nil {
 			logx.Errorf("字符串加载模型失败! err:%v", err)
 			logx.Must(err)

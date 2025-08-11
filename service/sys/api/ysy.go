@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"go-zero-fast/service/sys/api/internal/config"
 	"go-zero-fast/service/sys/api/internal/handler"
 	"go-zero-fast/service/sys/api/internal/svc"
@@ -21,6 +20,9 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	server := rest.MustNewServer(c.RestConf)
+	//server := rest.MustNewServer(c.RestConf, rest.WithUnauthorizedCallback(func(w http.ResponseWriter, r *http.Request, err error) {
+	//	result.HttpResult(r, w, "", xerr.NewErrCode(xerr.TOKEN_EXPIRE_ERROR))
+	//}))
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)

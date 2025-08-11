@@ -20,7 +20,8 @@ BizRedis:
   Type: node
 
 DB:
-  DataSource: root:123456@tcp(127.0.0.1:3306)/goZero-admin?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai
+#  DataSource: root:123456@tcp(127.0.0.1:3306)/goZero-admin?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai
+  DataSource: root:123456@tcp(127.0.0.1:3306)/go-zero-fast?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai
   MaxIdleConns: 10
   MaxOpenConns: 100
   ConnMaxLifetime: 3600
