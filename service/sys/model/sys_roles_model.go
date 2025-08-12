@@ -6,13 +6,16 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"go-zero-fast/common/fun"
 	"strings"
 	"sync"
 	"time"
 )
 
 var _ SysRolesModel = (*customSysRolesModel)(nil)
+
+var (
+	cacheGoZeroFastSysRolesTotalPrefix = "cache:goZeroFast:sysRoles:total"
+)
 
 type (
 	// SysRolesModel is an interface to be customized, add more methods here,
@@ -82,7 +85,7 @@ func (m *defaultSysRolesModel) FindPageByCursor(ctx context.Context, cursor uint
 	// B. 总数查询（带缓存）
 	go func() {
 		defer wg.Done()
-		cacheKey := fun.RedisPrefix + ":cache:sysRoles:total"
+		cacheKey := cacheGoZeroFastSysRolesTotalPrefix
 		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
 			fmt.Println("------------- redis total", total)
 			return
@@ -188,7 +191,7 @@ func (m *customSysRolesModel) DeleteByIds(ctx context.Context, ids []uint64) err
 
 func (m *customSysRolesModel) clearRoleCache(ids []uint64) {
 	// 1. 清理总条数缓存
-	cacheKey := fun.RedisPrefix + ":cache:sysRoles:total"
+	cacheKey := cacheGoZeroFastSysRolesTotalPrefix
 	m.DelCache(cacheKey)
 
 	// 2. 清理单条记录缓存（如果有）
