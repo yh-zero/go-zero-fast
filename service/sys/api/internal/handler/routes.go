@@ -37,10 +37,34 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authority},
 			[]rest.Route{
 				{
+					// 创建角色
+					Method:  http.MethodPost,
+					Path:    "/role/createRole",
+					Handler: role.CreateRoleHandler(serverCtx),
+				},
+				{
+					// 删除角色信息
+					Method:  http.MethodPost,
+					Path:    "/role/deleteRole",
+					Handler: role.DeleteRoleHandler(serverCtx),
+				},
+				{
+					// 通过ID获取角色
+					Method:  http.MethodGet,
+					Path:    "/role/getRoleById",
+					Handler: role.GetRoleByIdHandler(serverCtx),
+				},
+				{
 					// 获取角色列表
 					Method:  http.MethodGet,
 					Path:    "/role/list",
 					Handler: role.GetRoleListHandler(serverCtx),
+				},
+				{
+					// 更新角色
+					Method:  http.MethodPut,
+					Path:    "/role/updateRole",
+					Handler: role.UpdateRoleHandler(serverCtx),
 				},
 			}...,
 		),

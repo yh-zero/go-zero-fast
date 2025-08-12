@@ -15,3 +15,16 @@ type PageInfo {
     //
     Cursor uint64 `json:"cursor,optional"`
 }
+
+type MessageRes {
+    Message string `json:"message"`
+}
+
+type IDReq {
+    Id uint64 `json:"id"`
+}
+
+type IDsReq {
+    Ids []uint64 `json:"ids"`
+}
+

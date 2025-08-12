@@ -28,3 +28,27 @@ func (s *RoleServer) GetRoleList(ctx context.Context, in *pb.RoleListReq) (*pb.R
 	l := rolelogic.NewGetRoleListLogic(ctx, s.svcCtx)
 	return l.GetRoleList(in)
 }
+
+// 创建新角色
+func (s *RoleServer) CreateRole(ctx context.Context, in *pb.RoleInfo) (*pb.NoDataResponse, error) {
+	l := rolelogic.NewCreateRoleLogic(ctx, s.svcCtx)
+	return l.CreateRole(in)
+}
+
+// 删除角色信息
+func (s *RoleServer) DeleteRole(ctx context.Context, in *pb.IDsReq) (*pb.NoDataResponse, error) {
+	l := rolelogic.NewDeleteRoleLogic(ctx, s.svcCtx)
+	return l.DeleteRole(in)
+}
+
+// 更新角色
+func (s *RoleServer) UpdateRole(ctx context.Context, in *pb.RoleInfo) (*pb.NoDataResponse, error) {
+	l := rolelogic.NewUpdateRoleLogic(ctx, s.svcCtx)
+	return l.UpdateRole(in)
+}
+
+// 通过ID获取角色
+func (s *RoleServer) GetRoleById(ctx context.Context, in *pb.IDReq) (*pb.NoDataResponse, error) {
+	l := rolelogic.NewGetRoleByIdLogic(ctx, s.svcCtx)
+	return l.GetRoleById(in)
+}

@@ -4,6 +4,16 @@ option go_package = "./pb";
 
 package pb;
 
+message IDReq {
+  uint64 id = 1;
+}
+
+message IDsReq {
+  repeated uint64 ids = 1;
+}
+
+message NoDataResponse {}
+
 message PageInfo {
   uint64 pageNo = 1;
   uint64 pageSize = 2;
@@ -68,14 +78,6 @@ message TokenInfoReq {
 message TokenInfoRes {
   uint64 id = 1;
   string token = 2;
-}
-
-message IDReq {
-  uint64 id = 1;
-}
-
-message IDSReq {
-  repeated uint64 ids = 1;
 }
 
 message UserInfoRes {
@@ -172,6 +174,14 @@ service Role {
 
   // 获取角色列表
   rpc getRoleList (RoleListReq) returns (RoleListRes);
+  // 创建新角色
+  rpc createRole (RoleInfo) returns (NoDataResponse);
+  // 删除角色信息
+  rpc deleteRole (IDsReq) returns (NoDataResponse);
+  // 更新角色
+  rpc updateRole (RoleInfo) returns (NoDataResponse);
+  // 通过ID获取角色
+  rpc getRoleById (IDReq) returns (NoDataResponse);
 
 
 

@@ -44,6 +44,7 @@ func (l *GetRoleListLogic) GetRoleList(in *pb.RoleListReq) (*pb.RoleListRes, err
 			Code:   roles.Code,
 			Remark: roles.Remark,
 			Sort:   roles.Sort,
+
 			Model: &pb.Model{
 				Id:        roles.Id,
 				CreatedAt: uint64(roles.CreatedAt.UnixMilli()),

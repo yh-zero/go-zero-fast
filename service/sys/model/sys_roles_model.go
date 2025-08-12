@@ -6,6 +6,8 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"go-zero-fast/common/fun"
+	"strings"
 	"sync"
 	"time"
 )
@@ -20,6 +22,7 @@ type (
 		FindCodesByIds(ctx context.Context, ids []uint64) ([]string, error)
 		FindRoleNamesByIds(ctx context.Context, ids []uint64) ([]string, error)
 		FindPageByCursor(ctx context.Context, cursor uint64, pageSize uint64) ([]*SysRoles, uint64, uint64, error)
+		DeleteByIds(ctx context.Context, ids []uint64) error
 	}
 
 	customSysRolesModel struct {
@@ -79,7 +82,7 @@ func (m *defaultSysRolesModel) FindPageByCursor(ctx context.Context, cursor uint
 	// B. 总数查询（带缓存）
 	go func() {
 		defer wg.Done()
-		cacheKey := "cache:sysRoles:total"
+		cacheKey := fun.RedisPrefix + ":cache:sysRoles:total"
 		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
 			fmt.Println("------------- redis total", total)
 			return
@@ -88,10 +91,10 @@ func (m *defaultSysRolesModel) FindPageByCursor(ctx context.Context, cursor uint
 		query := fmt.Sprintf("SELECT COUNT(id) FROM %s", m.table)
 		totalErr = m.QueryRowNoCacheCtx(ctx, &total, query)
 		fmt.Println("------------- total", total)
-		// 异步更新缓存（30秒过期
+		// 异步更新缓存（60秒过期
 		if totalErr == nil {
 			go func() {
-				err := m.SetCacheWithExpire(cacheKey, total, 30*time.Second)
+				err := m.SetCacheWithExpire(cacheKey, total, 60*time.Second)
 				if err != nil {
 
 				}
@@ -152,4 +155,44 @@ func (m *customSysRolesModel) FindRoleNamesByIds(ctx context.Context, ids []uint
 	}
 
 	return result, nil
+}
+
+// DeleteByIds 根据角色ID批量删除记录
+func (m *customSysRolesModel) DeleteByIds(ctx context.Context, ids []uint64) error {
+	if len(ids) == 0 {
+		return nil
+	}
+
+	// 构建IN子句占位符（如"?,?,?"）
+	placeholders := strings.Repeat("?,", len(ids))
+	placeholders = placeholders[:len(placeholders)-1]
+
+	// 执行批量删除
+	query := fmt.Sprintf("DELETE FROM %s WHERE id IN (%s)", m.table, placeholders)
+
+	// 转换参数类型
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		args[i] = id
+	}
+
+	_, err := m.ExecNoCacheCtx(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	// 异步清理相关缓存
+	go m.clearRoleCache(ids)
+	return nil
+}
+
+func (m *customSysRolesModel) clearRoleCache(ids []uint64) {
+	// 1. 清理总条数缓存
+	cacheKey := fun.RedisPrefix + ":cache:sysRoles:total"
+	m.DelCache(cacheKey)
+
+	// 2. 清理单条记录缓存（如果有）
+	for _, id := range ids {
+		m.DelCache(fmt.Sprintf("%s%v", m.table, id))
+	}
 }

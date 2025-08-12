@@ -16,5 +16,23 @@ service Ysy {
     @handler getRoleList
     get /role/list (RoleListReq) returns (RoleListRes)
 
+    @doc "创建角色"
+    @handler createRole
+    post /role/createRole (RoleInfo) returns (MessageRes)
+
+    @doc "删除角色信息"
+    @handler deleteRole
+    post /role/deleteRole (IDsReq) returns (MessageRes)
+
+    @doc "更新角色"
+    @handler updateRole
+    put /role/updateRole (RoleInfo) returns (MessageRes)
+
+    @doc "通过ID获取角色"
+    @handler getRoleById
+    get /role/getRoleById (IDReq) returns (RoleInfoResp)
+
+
+
 }
 

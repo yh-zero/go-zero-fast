@@ -14,27 +14,36 @@ import (
 )
 
 type (
-	IDReq        = pb.IDReq
-	IDSReq       = pb.IDSReq
-	MenuInfo     = pb.MenuInfo
-	MenuInfoList = pb.MenuInfoList
-	Meta         = pb.Meta
-	Model        = pb.Model
-	PageInfo     = pb.PageInfo
-	RoleInfo     = pb.RoleInfo
-	RoleListReq  = pb.RoleListReq
-	RoleListRes  = pb.RoleListRes
-	TokenInfo    = pb.TokenInfo
-	TokenInfoReq = pb.TokenInfoReq
-	TokenInfoRes = pb.TokenInfoRes
-	UserInfo     = pb.UserInfo
-	UserInfoRes  = pb.UserInfoRes
-	UsernameReq  = pb.UsernameReq
-	UsernameRes  = pb.UsernameRes
+	IDReq          = pb.IDReq
+	IDsReq         = pb.IDsReq
+	MenuInfo       = pb.MenuInfo
+	MenuInfoList   = pb.MenuInfoList
+	Meta           = pb.Meta
+	Model          = pb.Model
+	NoDataResponse = pb.NoDataResponse
+	PageInfo       = pb.PageInfo
+	RoleInfo       = pb.RoleInfo
+	RoleListReq    = pb.RoleListReq
+	RoleListRes    = pb.RoleListRes
+	TokenInfo      = pb.TokenInfo
+	TokenInfoReq   = pb.TokenInfoReq
+	TokenInfoRes   = pb.TokenInfoRes
+	UserInfo       = pb.UserInfo
+	UserInfoRes    = pb.UserInfoRes
+	UsernameReq    = pb.UsernameReq
+	UsernameRes    = pb.UsernameRes
 
 	Role interface {
 		// 获取角色列表
 		GetRoleList(ctx context.Context, in *RoleListReq, opts ...grpc.CallOption) (*RoleListRes, error)
+		// 创建新角色
+		CreateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error)
+		// 删除角色信息
+		DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.CallOption) (*NoDataResponse, error)
+		// 更新角色
+		UpdateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error)
+		// 通过ID获取角色
+		GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*NoDataResponse, error)
 	}
 
 	defaultRole struct {
@@ -52,4 +61,28 @@ func NewRole(cli zrpc.Client) Role {
 func (m *defaultRole) GetRoleList(ctx context.Context, in *RoleListReq, opts ...grpc.CallOption) (*RoleListRes, error) {
 	client := pb.NewRoleClient(m.cli.Conn())
 	return client.GetRoleList(ctx, in, opts...)
+}
+
+// 创建新角色
+func (m *defaultRole) CreateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error) {
+	client := pb.NewRoleClient(m.cli.Conn())
+	return client.CreateRole(ctx, in, opts...)
+}
+
+// 删除角色信息
+func (m *defaultRole) DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.CallOption) (*NoDataResponse, error) {
+	client := pb.NewRoleClient(m.cli.Conn())
+	return client.DeleteRole(ctx, in, opts...)
+}
+
+// 更新角色
+func (m *defaultRole) UpdateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error) {
+	client := pb.NewRoleClient(m.cli.Conn())
+	return client.UpdateRole(ctx, in, opts...)
+}
+
+// 通过ID获取角色
+func (m *defaultRole) GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*NoDataResponse, error) {
+	client := pb.NewRoleClient(m.cli.Conn())
+	return client.GetRoleById(ctx, in, opts...)
 }

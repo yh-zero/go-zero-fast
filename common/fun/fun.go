@@ -6,6 +6,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var RedisPrefix = "go-zero-fast"
+
 func NullStringToString(ns sql.NullString) string {
 	if ns.Valid {
 		return ns.String

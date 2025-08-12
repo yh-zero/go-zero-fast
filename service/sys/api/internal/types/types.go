@@ -12,6 +12,14 @@ type CaptchaRes struct {
 	CaptchaInfo
 }
 
+type IDReq struct {
+	Id uint64 `json:"id"`
+}
+
+type IDsReq struct {
+	Ids []uint64 `json:"ids"`
+}
+
 type LoginInfo struct {
 	UserId uint64 `json:"userId"` // 用户id
 	Token  string `json:"token"`  // 和前端交互的token
@@ -50,6 +58,10 @@ type MenuListRes struct {
 	List []MenuInfo `json:"data"`
 }
 
+type MessageRes struct {
+	Message string `json:"message"`
+}
+
 type Meta struct {
 	Title              string `json:"title" validate:"max=50"`                                  // 菜单显示名
 	Icon               string `json:"icon" validate:"max=50"`                                   // 菜单图标
@@ -86,10 +98,14 @@ type RoleInfo struct {
 	Model
 	Trans  string `json:"trans,optional"`                                     // 展示名称
 	Status uint64 `json:"status,optional" validate:"omitempty,lt=20"`         // 状态
-	Name   string `json:"name,optional" validate:"omitempty,max=30"`          // 角色名称
+	Name   string `json:"name" validate:"omitempty,max=30"`                   // 角色名称
 	Code   string `json:"code,optional" validate:"omitempty,max=15,alphanum"` // 角色码 -- 预留 目前用角色id匹配 真正的角色
 	Remark string `json:"remark,optional" validate:"omitempty,max=200"`       // 备注
 	Sort   uint64 `json:"sort,optional" validate:"omitempty,lt=10000"`        // 排序
+}
+
+type RoleInfoResp struct {
+	RoleInfo
 }
 
 type RoleListReq struct {

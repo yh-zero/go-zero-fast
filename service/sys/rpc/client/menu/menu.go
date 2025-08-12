@@ -14,23 +14,24 @@ import (
 )
 
 type (
-	IDReq        = pb.IDReq
-	IDSReq       = pb.IDSReq
-	MenuInfo     = pb.MenuInfo
-	MenuInfoList = pb.MenuInfoList
-	Meta         = pb.Meta
-	Model        = pb.Model
-	PageInfo     = pb.PageInfo
-	RoleInfo     = pb.RoleInfo
-	RoleListReq  = pb.RoleListReq
-	RoleListRes  = pb.RoleListRes
-	TokenInfo    = pb.TokenInfo
-	TokenInfoReq = pb.TokenInfoReq
-	TokenInfoRes = pb.TokenInfoRes
-	UserInfo     = pb.UserInfo
-	UserInfoRes  = pb.UserInfoRes
-	UsernameReq  = pb.UsernameReq
-	UsernameRes  = pb.UsernameRes
+	IDReq          = pb.IDReq
+	IDsReq         = pb.IDsReq
+	MenuInfo       = pb.MenuInfo
+	MenuInfoList   = pb.MenuInfoList
+	Meta           = pb.Meta
+	Model          = pb.Model
+	NoDataResponse = pb.NoDataResponse
+	PageInfo       = pb.PageInfo
+	RoleInfo       = pb.RoleInfo
+	RoleListReq    = pb.RoleListReq
+	RoleListRes    = pb.RoleListRes
+	TokenInfo      = pb.TokenInfo
+	TokenInfoReq   = pb.TokenInfoReq
+	TokenInfoRes   = pb.TokenInfoRes
+	UserInfo       = pb.UserInfo
+	UserInfoRes    = pb.UserInfoRes
+	UsernameReq    = pb.UsernameReq
+	UsernameRes    = pb.UsernameRes
 
 	Menu interface {
 		// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
