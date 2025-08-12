@@ -72,8 +72,35 @@ type Model struct {
 	DeletedAt string `json:"deletedAt,optional"`
 }
 
+type PageInfo struct {
+	PageNo   uint64 `json:"pageno,optional" validate:"required,number,gt=0"`
+	PageSize uint64 `json:"pageSize,optional" validate:"required,number,lt=100000"`
+	Cursor   uint64 `json:"cursor,optional"`
+}
+
 type PermCodeRes struct {
 	Data []uint64 `json:"data"`
+}
+
+type RoleInfo struct {
+	Model
+	Trans  string `json:"trans,optional"`                                     // 展示名称
+	Status uint64 `json:"status,optional" validate:"omitempty,lt=20"`         // 状态
+	Name   string `json:"name,optional" validate:"omitempty,max=30"`          // 角色名称
+	Code   string `json:"code,optional" validate:"omitempty,max=15,alphanum"` // 角色码 -- 预留 目前用角色id匹配 真正的角色
+	Remark string `json:"remark,optional" validate:"omitempty,max=200"`       // 备注
+	Sort   uint64 `json:"sort,optional" validate:"omitempty,lt=10000"`        // 排序
+}
+
+type RoleListReq struct {
+	PageInfo
+	Name string `json:"name,optional"` // 角色名称
+}
+
+type RoleListRes struct {
+	List   []RoleInfo `json:"list"`
+	Total  uint64     `json:"total"`
+	Cursor uint64     `json:"cursor"`
 }
 
 type UserBaseIDInfoRes struct {

@@ -2,7 +2,7 @@
 // goctl 1.8.5
 // Source: sys.proto
 
-package menu
+package role
 
 import (
 	"context"
@@ -32,24 +32,24 @@ type (
 	UsernameReq  = pb.UsernameReq
 	UsernameRes  = pb.UsernameRes
 
-	Menu interface {
-		// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-		GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error)
+	Role interface {
+		// 获取角色列表
+		GetRoleList(ctx context.Context, in *RoleListReq, opts ...grpc.CallOption) (*RoleListRes, error)
 	}
 
-	defaultMenu struct {
+	defaultRole struct {
 		cli zrpc.Client
 	}
 )
 
-func NewMenu(cli zrpc.Client) Menu {
-	return &defaultMenu{
+func NewRole(cli zrpc.Client) Role {
+	return &defaultRole{
 		cli: cli,
 	}
 }
 
-// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-func (m *defaultMenu) GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error) {
-	client := pb.NewMenuClient(m.cli.Conn())
-	return client.GetMenuListByRoleId(ctx, in, opts...)
+// 获取角色列表
+func (m *defaultRole) GetRoleList(ctx context.Context, in *RoleListReq, opts ...grpc.CallOption) (*RoleListRes, error) {
+	client := pb.NewRoleClient(m.cli.Conn())
+	return client.GetRoleList(ctx, in, opts...)
 }

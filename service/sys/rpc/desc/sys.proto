@@ -4,12 +4,26 @@ option go_package = "./pb";
 
 package pb;
 
+message PageInfo {
+  uint64 pageNo = 1;
+  uint64 pageSize = 2;
+  uint64 cursor = 3;
+}
+
+message Model {
+  uint64 id = 1;
+  uint64 createdAt = 2;
+  uint64 updatedAt = 3;
+  uint64 deletedAt = 4;
+}
+
+
 message UsernameReq {
   string username = 1;
 }
 
 message UserInfo {
-//  optional uint64 id = 1; // optional 可以设置不能为空
+//   uint64 id = 1; //  可以设置不能为空
     uint64 id = 1;
     uint64 status = 2;
     string username = 3;
@@ -108,6 +122,31 @@ message MenuInfoList {
   repeated MenuInfo menuInfo = 2;
 }
 
+message RoleInfo {
+  Model model = 1;
+  uint64 status = 2;
+  string name = 3;
+  string code = 4;
+  string remark = 5;
+  uint64 sort = 6;
+}
+
+message RoleListReq {
+  PageInfo pageInfo = 1;
+  string name = 2;
+  string code = 3;
+  uint64 Id = 4;
+}
+message RoleListRes {
+  uint64 total = 1;
+  uint64 cursor = 2;
+  repeated RoleInfo roleInfo = 3;
+}
+
+
+
+//=============================== 隔离结构体 ===========================
+
 service User {
   // 根据用户名获取用户详情
   rpc getUserByUsername (UsernameReq) returns (UsernameRes);
@@ -127,4 +166,13 @@ service Menu {
 
   // 根据角色ids 获取菜单
   //  rpc getMenuListByRoleIds (IDSReq) returns (MenuInfoList);
+}
+
+service Role {
+
+  // 获取角色列表
+  rpc getRoleList (RoleListReq) returns (RoleListRes);
+
+
+
 }

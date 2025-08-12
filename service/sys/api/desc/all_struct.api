@@ -4,3 +4,14 @@ type Model {
     UpdatedAt string `json:"updatedAt,optional"`
     DeletedAt string `json:"deletedAt,optional"`
 }
+
+type PageInfo {
+    // 第几页
+    PageNo uint64 `json:"pageno,optional" validate:"required,number,gt=0"`
+
+    // 一页有多少条数据
+    PageSize uint64 `json:"pageSize,optional" validate:"required,number,lt=100000"`
+
+    //
+    Cursor uint64 `json:"cursor,optional"`
+}

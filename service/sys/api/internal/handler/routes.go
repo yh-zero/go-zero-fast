@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	menu "go-zero-fast/service/sys/api/internal/handler/menu"
+	role "go-zero-fast/service/sys/api/internal/handler/role"
 	user "go-zero-fast/service/sys/api/internal/handler/user"
 	usernoauth "go-zero-fast/service/sys/api/internal/handler/usernoauth"
 	"go-zero-fast/service/sys/api/internal/svc"
@@ -24,6 +25,22 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodGet,
 					Path:    "/menu/role/list",
 					Handler: menu.GetMenuListByRoleHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+		rest.WithPrefix("/v1/sys"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.Authority},
+			[]rest.Route{
+				{
+					// 获取角色列表
+					Method:  http.MethodGet,
+					Path:    "/role/list",
+					Handler: role.GetRoleListHandler(serverCtx),
 				},
 			}...,
 		),

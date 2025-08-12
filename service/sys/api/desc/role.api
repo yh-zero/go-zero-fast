@@ -1,0 +1,20 @@
+syntax = "v1"
+
+import (
+    "role_struct.api"
+)
+
+@server(
+    prefix: /v1/sys
+    jwt: JwtAuth
+    group: role
+    middleware: Authority
+)
+
+service Ysy {
+    @doc "获取角色列表"
+    @handler getRoleList
+    get /role/list (RoleListReq) returns (RoleListRes)
+
+}
+

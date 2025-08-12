@@ -6,6 +6,8 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"sync"
+	"time"
 )
 
 var _ SysRolesModel = (*customSysRolesModel)(nil)
@@ -17,6 +19,7 @@ type (
 		sysRolesModel
 		FindCodesByIds(ctx context.Context, ids []uint64) ([]string, error)
 		FindRoleNamesByIds(ctx context.Context, ids []uint64) ([]string, error)
+		FindPageByCursor(ctx context.Context, cursor uint64, pageSize uint64) ([]*SysRoles, uint64, uint64, error)
 	}
 
 	customSysRolesModel struct {
@@ -29,6 +32,83 @@ func NewSysRolesModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option
 	return &customSysRolesModel{
 		defaultSysRolesModel: newSysRolesModel(conn, c, opts...),
 	}
+}
+
+// 分页查询角色列表
+/*
+	cursor 游标（0表示第一页）
+	pageSize 条数
+
+*/
+func (m *defaultSysRolesModel) FindPageByCursor(ctx context.Context, cursor uint64, pageSize uint64) ([]*SysRoles, uint64, uint64, error) {
+	// 参数校验
+	if pageSize <= 0 || pageSize > 100 {
+		pageSize = 20
+	}
+
+	// 并行获取数据与总数
+	var list []*SysRoles
+	var nextCursor, total uint64
+	var listErr, totalErr error
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
+	// A. 分页数据查询
+	go func() {
+		defer wg.Done()
+		query := fmt.Sprintf("SELECT %s FROM %s WHERE id < ? ORDER BY id DESC LIMIT ?", sysRolesRows, m.table)
+		if cursor == 0 {
+			query = fmt.Sprintf("SELECT %s FROM %s ORDER BY id DESC LIMIT ?", sysRolesRows, m.table)
+		}
+
+		// 多查1条判断是否有下一页
+		limit := pageSize + 1
+		if cursor > 0 {
+			listErr = m.QueryRowsNoCacheCtx(ctx, &list, query, cursor, limit)
+		} else {
+			listErr = m.QueryRowsNoCacheCtx(ctx, &list, query, limit)
+		}
+
+		if uint64(len(list)) > pageSize {
+			list = list[:pageSize]
+			nextCursor = list[len(list)-1].Id // 设置下一页游标
+		}
+	}()
+
+	// B. 总数查询（带缓存）
+	go func() {
+		defer wg.Done()
+		cacheKey := "cache:sysRoles:total"
+		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
+			fmt.Println("------------- redis total", total)
+			return
+		}
+
+		query := fmt.Sprintf("SELECT COUNT(id) FROM %s", m.table)
+		totalErr = m.QueryRowNoCacheCtx(ctx, &total, query)
+		fmt.Println("------------- total", total)
+		// 异步更新缓存（30秒过期
+		if totalErr == nil {
+			go func() {
+				err := m.SetCacheWithExpire(cacheKey, total, 30*time.Second)
+				if err != nil {
+
+				}
+			}()
+		}
+	}()
+
+	wg.Wait()
+
+	// 错误合并返回
+	if listErr != nil {
+		return nil, 0, 0, listErr
+	}
+	if totalErr != nil {
+		return nil, 0, 0, totalErr
+	}
+	return list, nextCursor, total, nil
 }
 
 func (m *customSysRolesModel) FindCodesByIds(ctx context.Context, ids []uint64) ([]string, error) {
@@ -73,61 +153,3 @@ func (m *customSysRolesModel) FindRoleNamesByIds(ctx context.Context, ids []uint
 
 	return result, nil
 }
-
-// 带缓存
-//func (m *customSysRolesModel) FindCodesByIds(ctx context.Context, ids []uint64) ([]string, error) {
-//	if len(ids) == 0 {
-//		return nil, nil
-//	}
-//
-//	// 创建结果切片，初始化为空字符串
-//	result := make([]string, len(ids))
-//
-//	// 记录需要从数据库查询的ID及其在结果切片中的位置
-//	missingIds := make([]uint64, 0)
-//	idToIndex := make(map[uint64]int)
-//
-//	// 先尝试从缓存中获取
-//	for i, id := range ids {
-//		cacheKey := fmt.Sprintf("%s%v", cacheGoZeroFastSysRolesIdPrefix, id)
-//		var role SysRoles
-//		err := m.QueryRowCtx(ctx, &role, cacheKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-//			query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", sysRolesRows, m.table)
-//			return conn.QueryRowCtx(ctx, v, query, id)
-//		})
-//		if err == nil {
-//			result[i] = role.Code
-//		} else if err == sqlc.ErrNotFound {
-//			missingIds = append(missingIds, id)
-//			idToIndex[id] = i
-//		} else {
-//			return nil, err
-//		}
-//	}
-//
-//	// 如果所有数据都在缓存中找到，直接返回
-//	if len(missingIds) == 0 {
-//		return result, nil
-//	}
-//
-//	// 只查询一次数据库获取缺失的数据
-//	query := fmt.Sprintf("select id, code from %s where id in (%s)", m.table, strings.Repeat("?,", len(missingIds)-1)+"?")
-//	var roles []struct {
-//		Id   uint64 `db:"id"`
-//		Code string `db:"code"`
-//	}
-//
-//	err := m.QueryRowsNoCacheCtx(ctx, &roles, query, missingIds)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// 处理查询结果
-//	for _, role := range roles {
-//		if index, ok := idToIndex[role.Id]; ok {
-//			result[index] = role.Code
-//		}
-//	}
-//
-//	return result, nil
-//}

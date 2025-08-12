@@ -19,6 +19,11 @@ type (
 	MenuInfo     = pb.MenuInfo
 	MenuInfoList = pb.MenuInfoList
 	Meta         = pb.Meta
+	Model        = pb.Model
+	PageInfo     = pb.PageInfo
+	RoleInfo     = pb.RoleInfo
+	RoleListReq  = pb.RoleListReq
+	RoleListRes  = pb.RoleListRes
 	TokenInfo    = pb.TokenInfo
 	TokenInfoReq = pb.TokenInfoReq
 	TokenInfoRes = pb.TokenInfoRes

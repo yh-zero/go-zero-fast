@@ -6,6 +6,7 @@ import (
 
 	"go-zero-fast/service/sys/rpc/internal/config"
 	menuServer "go-zero-fast/service/sys/rpc/internal/server/menu"
+	roelServer "go-zero-fast/service/sys/rpc/internal/server/role"
 	tokenServer "go-zero-fast/service/sys/rpc/internal/server/token"
 	userServer "go-zero-fast/service/sys/rpc/internal/server/user"
 	"go-zero-fast/service/sys/rpc/internal/svc"
@@ -31,6 +32,7 @@ func main() {
 		pb.RegisterUserServer(grpcServer, userServer.NewUserServer(ctx))
 		pb.RegisterTokenServer(grpcServer, tokenServer.NewTokenServer(ctx))
 		pb.RegisterMenuServer(grpcServer, menuServer.NewMenuServer(ctx))
+		pb.RegisterRoleServer(grpcServer, roelServer.NewRoleServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

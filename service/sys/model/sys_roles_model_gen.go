@@ -151,3 +151,4 @@ func (m *defaultSysRolesModel) queryPrimary(ctx context.Context, conn sqlx.SqlCo
 func (m *defaultSysRolesModel) tableName() string {
 	return m.table
 }
+

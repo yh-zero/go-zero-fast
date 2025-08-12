@@ -6,6 +6,7 @@ import (
 	"go-zero-fast/service/sys/api/internal/config"
 	"go-zero-fast/service/sys/api/internal/middleware"
 	"go-zero-fast/service/sys/rpc/client/menu"
+	"go-zero-fast/service/sys/rpc/client/role"
 	"go-zero-fast/service/sys/rpc/client/token"
 	"go-zero-fast/service/sys/rpc/client/user"
 
@@ -23,6 +24,7 @@ type ServiceContext struct {
 	UserRPC  user.User
 	TokenRPC token.Token
 	MenuRPC  menu.Menu
+	RoleRpc  role.Role
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -37,6 +39,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		UserRPC:  user.NewUser(zrpc.MustNewClient(c.SysRPC)),
 		TokenRPC: token.NewToken(zrpc.MustNewClient(c.SysRPC)),
 		MenuRPC:  menu.NewMenu(zrpc.MustNewClient(c.SysRPC)),
+		RoleRpc:  role.NewRole(zrpc.MustNewClient(c.SysRPC)),
 		Casbin:   casB,
 	}
 
