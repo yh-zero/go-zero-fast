@@ -26,29 +26,27 @@ func NewGetRoleListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetRo
 // 获取角色列表
 func (l *GetRoleListLogic) GetRoleList(in *pb.RoleListReq) (*pb.RoleListRes, error) {
 	fmt.Println("-------------- GetRoleList -------------", in)
-	cursor, nextCursor, total, err := l.svcCtx.SysRolesModel.FindPageByCursor(l.ctx, in.PageInfo.Cursor, in.PageInfo.PageSize)
-	fmt.Println("=========== nextCursor", nextCursor)
+	cursor, total, err := l.svcCtx.SysRolesModel.FindPageByName(l.ctx, in.Name, in.PageInfo.PageNo, in.PageInfo.PageSize)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("FindPageByCursor error: %v", err)
 		return nil, err
 	}
 
 	resp := pb.RoleListRes{}
-	resp.Cursor = nextCursor
 	resp.Total = total
 	for _, roles := range cursor {
-		fmt.Println("----------------- roles", roles)
 		resp.RoleInfo = append(resp.RoleInfo, &pb.RoleInfo{
-			Status: roles.Status,
-			Name:   roles.Name,
-			Code:   roles.Code,
-			Remark: roles.Remark,
-			Sort:   roles.Sort,
+			Status:        roles.Status,
+			Name:          roles.Name,
+			Code:          roles.Code,
+			Remark:        roles.Remark,
+			Sort:          roles.Sort,
+			DefaultRouter: roles.DefaultRouter,
 
 			Model: &pb.Model{
 				Id:        roles.Id,
-				CreatedAt: uint64(roles.CreatedAt.UnixMilli()),
-				UpdatedAt: uint64(roles.UpdatedAt.UnixMilli()),
+				CreatedAt: uint64(roles.CreatedAt.Unix()),
+				UpdatedAt: uint64(roles.UpdatedAt.Unix()),
 			},
 		})
 	}

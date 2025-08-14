@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 var RedisPrefix = "go-zero-fast"
@@ -43,4 +44,13 @@ func HashPassword(password string) (string, error) {
 // CheckPassword 验证密码是否匹配哈希值
 func CheckPassword(password string, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func FormatDate(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
+}
+
+func FormatTimestampToDate(timestamp uint64) string {
+	t := time.Unix(int64(timestamp), 0)
+	return t.Format("2006-01-02 15:04:05")
 }

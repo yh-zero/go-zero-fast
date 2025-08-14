@@ -7,13 +7,13 @@ type Model {
 
 type PageInfo {
     // 第几页
-    PageNo uint64 `json:"pageno,optional" validate:"required,number,gt=0"`
+    PageNo uint64 `form:"pageNo,optional" validate:"required,number,gt=0"`
 
     // 一页有多少条数据
-    PageSize uint64 `json:"pageSize,optional" validate:"required,number,lt=100000"`
+    PageSize uint64 `form:"pageSize,optional" validate:"required,number,lt=100000"`
 
     //
-    Cursor uint64 `json:"cursor,optional"`
+    Cursor uint64 `form:"cursor,optional"`
 }
 
 type MessageRes {

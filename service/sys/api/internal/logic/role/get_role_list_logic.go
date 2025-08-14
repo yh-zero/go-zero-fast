@@ -3,6 +3,7 @@ package role
 import (
 	"context"
 	"fmt"
+	"go-zero-fast/common/fun"
 	"go-zero-fast/service/sys/rpc/pb"
 	"strconv"
 
@@ -27,7 +28,8 @@ func NewGetRoleListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetRo
 	}
 }
 
-func (l *GetRoleListLogic) GetRoleList(req *types.RoleListReq) (resp *types.RoleListRes, err error) {
+func (l *GetRoleListLogic) GetRoleList(req *types.RoleListRequest) (resp *types.RoleListRes, err error) {
+	fmt.Println("-------GetRoleList", req)
 	roles, err := l.svcCtx.RoleRpc.GetRoleList(l.ctx, &pb.RoleListReq{
 		PageInfo: &pb.PageInfo{
 			PageNo:   req.PageNo,
@@ -48,19 +50,21 @@ func (l *GetRoleListLogic) GetRoleList(req *types.RoleListReq) (resp *types.Role
 
 	for _, v := range roles.RoleInfo {
 		model := v.Model // 减少字段访问开销
+		fmt.Println("-0----------------------strconv.FormatUint(model.CreatedAt, 10)", strconv.FormatUint(model.CreatedAt, 10))
 		resp.List = append(resp.List, types.RoleInfo{
 			Model: types.Model{
 				ID:        int64(model.Id),
-				CreatedAt: strconv.FormatUint(model.CreatedAt, 10),
-				UpdatedAt: strconv.FormatUint(model.UpdatedAt, 10),
-				DeletedAt: strconv.FormatUint(model.DeletedAt, 10),
+				CreatedAt: fun.FormatTimestampToDate(model.CreatedAt),
+				UpdatedAt: fun.FormatTimestampToDate(model.UpdatedAt),
+				DeletedAt: fun.FormatTimestampToDate(model.DeletedAt),
 			},
-			Trans:  "",
-			Status: v.Status,
-			Name:   v.Name,
-			Code:   v.Code,
-			Remark: v.Remark,
-			Sort:   v.Sort,
+			Trans:         "",
+			Status:        v.Status,
+			Name:          v.Name,
+			Code:          v.Code,
+			Remark:        v.Remark,
+			Sort:          v.Sort,
+			DefaultRouter: v.DefaultRouter,
 		})
 	}
 	fmt.Println("----------- 11resp", resp)

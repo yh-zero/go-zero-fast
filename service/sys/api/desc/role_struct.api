@@ -12,11 +12,12 @@ type (
         Code string `json:"code,optional" validate:"omitempty,max=15,alphanum"` // 角色码 -- 预留 目前用角色id匹配 真正的角色
         Remark string `json:"remark,optional" validate:"omitempty,max=200"` // 备注
         Sort uint64 `json:"sort,optional" validate:"omitempty,lt=10000"` // 排序
+        DefaultRouter string    `json:"defaultRouter"`
     }
 
-    RoleListReq {
+    RoleListRequest {
         PageInfo
-        Name string `json:"name,optional"` // 角色名称
+        Name string `form:"name,optional"` // 角色名称
     }
 
     RoleListRes {

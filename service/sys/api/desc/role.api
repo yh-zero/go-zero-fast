@@ -14,7 +14,7 @@ import (
 service Ysy {
     @doc "获取角色列表"
     @handler getRoleList
-    get /role/list (RoleListReq) returns (RoleListRes)
+    get /role/list (RoleListRequest) returns (RoleListRes)
 
     @doc "创建角色"
     @handler createRole

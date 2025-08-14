@@ -131,6 +131,8 @@ message RoleInfo {
   string code = 4;
   string remark = 5;
   uint64 sort = 6;
+  string defaultRouter = 7;
+
 }
 
 message RoleListReq {

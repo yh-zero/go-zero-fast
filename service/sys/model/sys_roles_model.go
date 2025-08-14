@@ -26,6 +26,7 @@ type (
 		FindRoleNamesByIds(ctx context.Context, ids []uint64) ([]string, error)
 		FindPageByCursor(ctx context.Context, cursor uint64, pageSize uint64) ([]*SysRoles, uint64, uint64, error)
 		DeleteByIds(ctx context.Context, ids []uint64) error
+		FindPageByName(ctx context.Context, name string, pageNo uint64, pageSize uint64) ([]*SysRoles, uint64, error)
 	}
 
 	customSysRolesModel struct {
@@ -40,9 +41,112 @@ func NewSysRolesModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option
 	}
 }
 
+// 支持条件的分页查询方法
+func (m *defaultSysRolesModel) FindPageByName(ctx context.Context, name string, pageNo uint64, pageSize uint64) ([]*SysRoles, uint64, error) {
+	// 参数校验与默认值处理
+	if pageSize <= 0 || pageSize > 100 {
+		pageSize = 20
+	}
+	if pageNo <= 0 {
+		pageNo = 1
+	}
+
+	// 并发执行数据查询和总数统计
+	var (
+		list     []*SysRoles
+		total    uint64
+		listErr  error
+		totalErr error
+	)
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
+	// 1. 分页数据查询
+	go func() {
+		defer wg.Done()
+
+		baseQuery := fmt.Sprintf("SELECT %s FROM %s", sysRolesRows, m.table)
+		condition := ""
+		params := []interface{}{}
+
+		// 添加名称过滤条件
+		if name != "" {
+			condition = " WHERE name LIKE ?"
+			params = append(params, "%"+name+"%")
+		}
+
+		// 计算偏移量
+		offset := (pageNo - 1) * pageSize
+
+		// 执行查询
+		query := baseQuery + condition + " ORDER BY id DESC LIMIT ?, ?"
+		params = append(params, offset, pageSize)
+
+		listErr = m.QueryRowsNoCacheCtx(ctx, &list, query, params...)
+	}()
+
+	// 2. 总数查询
+	go func() {
+		defer wg.Done()
+
+		// 根据查询条件生成唯一的缓存键
+		cacheKey := cacheGoZeroFastSysRolesTotalPrefix
+		if name != "" {
+			cacheKey += ":name:" + name
+		} else {
+			cacheKey += ":all"
+		}
+
+		// 先尝试从缓存获取
+		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
+			return
+		}
+
+		// 构建总数查询
+		baseQuery := fmt.Sprintf("SELECT COUNT(id) FROM %s", m.table)
+		condition := ""
+		params := []interface{}{}
+
+		if name != "" {
+			condition = " WHERE name LIKE ?"
+			params = append(params, "%"+name+"%")
+		}
+
+		query := baseQuery + condition
+
+		// 执行查询
+		totalErr = m.QueryRowNoCacheCtx(ctx, &total, query, params...)
+
+		// 异步缓存结果
+		if totalErr == nil {
+			exp := 60 * time.Second
+			if name == "" {
+				exp = 5 * time.Minute
+			}
+
+			go func() {
+				_ = m.SetCacheWithExpire(cacheKey, total, exp)
+			}()
+		}
+	}()
+
+	wg.Wait()
+
+	// 错误处理
+	if listErr != nil {
+		return nil, 0, listErr
+	}
+	if totalErr != nil {
+		return nil, 0, totalErr
+	}
+
+	return list, total, nil
+}
+
 // 分页查询角色列表
 /*
-	cursor 游标（0表示第一页）
+	cursor 游标（0表示第一页）  --
 	pageSize 条数
 
 */
