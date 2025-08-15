@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -27,6 +28,7 @@ type (
 		FindPageByCursor(ctx context.Context, cursor uint64, pageSize uint64) ([]*SysRoles, uint64, uint64, error)
 		DeleteByIds(ctx context.Context, ids []uint64) error
 		FindPageByName(ctx context.Context, name string, pageNo uint64, pageSize uint64) ([]*SysRoles, uint64, error)
+		UpdateWithMap(ctx context.Context, id uint64, data map[string]interface{}) error
 	}
 
 	customSysRolesModel struct {
@@ -302,4 +304,29 @@ func (m *customSysRolesModel) clearRoleCache(ids []uint64) {
 	for _, id := range ids {
 		m.DelCache(fmt.Sprintf("%s%v", m.table, id))
 	}
+}
+
+func (m *customSysRolesModel) UpdateWithMap(ctx context.Context, id uint64, data map[string]interface{}) error {
+	if len(data) == 0 {
+		return errors.New("无有效更新字段")
+	}
+
+	// 添加更新时间戳
+	data["updated_at"] = time.Now()
+
+	query := fmt.Sprintf("UPDATE %s SET ", m.table)
+	var sets []string
+	var args []interface{}
+
+	for k, v := range data {
+		sets = append(sets, fmt.Sprintf("%s = ?", k))
+		args = append(args, v)
+	}
+
+	query += strings.Join(sets, ", ")
+	query += " WHERE id = ?"
+	args = append(args, id)
+
+	_, err := m.ExecNoCacheCtx(ctx, query, args...)
+	return err
 }

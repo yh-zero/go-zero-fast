@@ -146,6 +146,16 @@ message RoleListRes {
   uint64 cursor = 2;
   repeated RoleInfo roleInfo = 3;
 }
+message RoleUpdateRequest {
+  uint64 id = 1;  // 必须字段
+  optional string name = 2;
+  optional string code = 3;
+  optional string remark = 4;
+  optional uint64 status = 5;
+  optional uint64 sort = 6;
+  optional string defaultRouter = 7;
+}
+
 
 
 
@@ -181,7 +191,7 @@ service Role {
   // 删除角色信息
   rpc deleteRole (IDsReq) returns (NoDataResponse);
   // 更新角色
-  rpc updateRole (RoleInfo) returns (NoDataResponse);
+  rpc updateRole (RoleUpdateRequest) returns (NoDataResponse);
   // 通过ID获取角色
   rpc getRoleById (IDReq) returns (NoDataResponse);
 

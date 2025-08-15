@@ -1,7 +1,6 @@
 package middlecasbin
 
 import (
-	"fmt"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
@@ -92,11 +91,8 @@ func (l CasbinConf) MustNewRedisWatcher(c redis.RedisConf, f func(string2 string
 }
 
 func KeyMatchFunc(args ...interface{}) (interface{}, error) {
-	fmt.Println("------------------ KeyMatchFunc ------------")
 	name1 := args[0].(string)
 	name2 := args[1].(string)
-	fmt.Println("------------------ name1:", name1)
-	fmt.Println("------------------ name2:", name2)
 
 	return (bool)(KeyMatch(name1, name2)), nil
 }

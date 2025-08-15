@@ -42,7 +42,7 @@ func (s *RoleServer) DeleteRole(ctx context.Context, in *pb.IDsReq) (*pb.NoDataR
 }
 
 // 更新角色
-func (s *RoleServer) UpdateRole(ctx context.Context, in *pb.RoleInfo) (*pb.NoDataResponse, error) {
+func (s *RoleServer) UpdateRole(ctx context.Context, in *pb.RoleUpdateRequest) (*pb.NoDataResponse, error) {
 	l := rolelogic.NewUpdateRoleLogic(ctx, s.svcCtx)
 	return l.UpdateRole(in)
 }

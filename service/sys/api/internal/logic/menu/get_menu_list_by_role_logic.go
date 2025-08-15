@@ -39,7 +39,7 @@ func (l *GetMenuListByRoleLogic) GetMenuListByRole() (resp *types.MenuListRes, e
 
 	for _, v := range menuList.MenuInfo {
 		resp.List = append(resp.List, types.MenuInfo{
-			Model:       types.Model{ID: int64(v.Id)},
+			Model:       types.Model{Id: v.Id},
 			Level:       v.Level,
 			ParentId:    v.ParentId,
 			Path:        v.Path,

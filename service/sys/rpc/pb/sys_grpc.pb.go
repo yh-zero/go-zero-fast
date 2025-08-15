@@ -331,7 +331,7 @@ type RoleClient interface {
 	// 删除角色信息
 	DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.CallOption) (*NoDataResponse, error)
 	// 更新角色
-	UpdateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error)
+	UpdateRole(ctx context.Context, in *RoleUpdateRequest, opts ...grpc.CallOption) (*NoDataResponse, error)
 	// 通过ID获取角色
 	GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*NoDataResponse, error)
 }
@@ -371,7 +371,7 @@ func (c *roleClient) DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *roleClient) UpdateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error) {
+func (c *roleClient) UpdateRole(ctx context.Context, in *RoleUpdateRequest, opts ...grpc.CallOption) (*NoDataResponse, error) {
 	out := new(NoDataResponse)
 	err := c.cc.Invoke(ctx, "/pb.Role/updateRole", in, out, opts...)
 	if err != nil {
@@ -400,7 +400,7 @@ type RoleServer interface {
 	// 删除角色信息
 	DeleteRole(context.Context, *IDsReq) (*NoDataResponse, error)
 	// 更新角色
-	UpdateRole(context.Context, *RoleInfo) (*NoDataResponse, error)
+	UpdateRole(context.Context, *RoleUpdateRequest) (*NoDataResponse, error)
 	// 通过ID获取角色
 	GetRoleById(context.Context, *IDReq) (*NoDataResponse, error)
 	mustEmbedUnimplementedRoleServer()
@@ -419,7 +419,7 @@ func (UnimplementedRoleServer) CreateRole(context.Context, *RoleInfo) (*NoDataRe
 func (UnimplementedRoleServer) DeleteRole(context.Context, *IDsReq) (*NoDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
 }
-func (UnimplementedRoleServer) UpdateRole(context.Context, *RoleInfo) (*NoDataResponse, error) {
+func (UnimplementedRoleServer) UpdateRole(context.Context, *RoleUpdateRequest) (*NoDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRole not implemented")
 }
 func (UnimplementedRoleServer) GetRoleById(context.Context, *IDReq) (*NoDataResponse, error) {
@@ -493,7 +493,7 @@ func _Role_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Role_UpdateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RoleInfo)
+	in := new(RoleUpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -505,7 +505,7 @@ func _Role_UpdateRole_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/pb.Role/updateRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServer).UpdateRole(ctx, req.(*RoleInfo))
+		return srv.(RoleServer).UpdateRole(ctx, req.(*RoleUpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

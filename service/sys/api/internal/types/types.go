@@ -78,7 +78,7 @@ type Meta struct {
 }
 
 type Model struct {
-	ID        int64  `json:"id,optional"`
+	Id        uint64 `json:"id,optional"`
 	CreatedAt string `json:"createdAt,optional"`
 	UpdatedAt string `json:"updatedAt,optional"`
 	DeletedAt string `json:"deletedAt,optional"`
@@ -98,11 +98,11 @@ type RoleInfo struct {
 	Model
 	Trans         string `json:"trans,optional"`                                     // 展示名称
 	Status        uint64 `json:"status,optional" validate:"omitempty,lt=20"`         // 状态
-	Name          string `json:"name" validate:"omitempty,max=30"`                   // 角色名称
+	Name          string `json:"name,optional" validate:"omitempty,max=30"`          // 角色名称
 	Code          string `json:"code,optional" validate:"omitempty,max=15,alphanum"` // 角色码 -- 预留 目前用角色id匹配 真正的角色
 	Remark        string `json:"remark,optional" validate:"omitempty,max=200"`       // 备注
 	Sort          uint64 `json:"sort,optional" validate:"omitempty,lt=10000"`        // 排序
-	DefaultRouter string `json:"defaultRouter"`
+	DefaultRouter string `json:"defaultRouter,optional"`
 }
 
 type RoleInfoResp struct {

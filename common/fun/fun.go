@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"reflect"
 	"time"
 )
 
@@ -53,4 +54,74 @@ func FormatDate(t time.Time) string {
 func FormatTimestampToDate(timestamp uint64) string {
 	t := time.Unix(int64(timestamp), 0)
 	return t.Format("2006-01-02 15:04:05")
+}
+
+// 目前用于更新  针对更新数据的时候 可以更新一部分数据
+func UpdateFieldsByReflect(src interface{}) map[string]interface{} {
+	updateMap := make(map[string]interface{})
+	v := reflect.ValueOf(src).Elem()
+	t := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Ptr && !field.IsNil() {
+			updateMap[t.Field(i).Name] = field.Elem().Interface()
+		}
+	}
+	return updateMap
+}
+
+// BuildUpdateRequest 构建动态更新请求  -- 针对api层
+// target: 目标结构体指针(如 &pb.RoleUpdateRequest{})
+// source: 源结构体(如 req *types.RoleInfo)
+func BuildUpdateRequest(target interface{}, source interface{}) error {
+	targetVal := reflect.ValueOf(target).Elem()
+	sourceVal := reflect.ValueOf(source).Elem()
+
+	if srcID := sourceVal.FieldByName("Id"); srcID.IsValid() && !isZero(srcID) {
+		if targetID := targetVal.FieldByName("Id"); targetID.IsValid() && targetID.CanSet() {
+			targetID.SetUint(srcID.Uint())
+		}
+	}
+
+	// 遍历源结构体字段
+	for i := 0; i < sourceVal.NumField(); i++ {
+		field := sourceVal.Type().Field(i)
+		fieldName := field.Name
+		fieldValue := sourceVal.Field(i)
+
+		// 检查字段是否为零值
+		if !isZero(fieldValue) {
+			// 在目标结构体中查找对应字段
+			targetField := targetVal.FieldByName(fieldName)
+			if targetField.IsValid() && targetField.CanSet() {
+				// 创建指针并赋值
+				ptr := reflect.New(fieldValue.Type())
+				ptr.Elem().Set(fieldValue)
+				targetField.Set(ptr)
+			}
+		}
+	}
+
+	return nil
+}
+
+// isZero 检查值是否为零值
+func isZero(v reflect.Value) bool {
+	switch v.Kind() {
+	case reflect.String:
+		return v.String() == ""
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return v.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return v.Float() == 0
+	case reflect.Bool:
+		return !v.Bool()
+	case reflect.Ptr, reflect.Interface, reflect.Slice, reflect.Map, reflect.Chan, reflect.Func:
+		return v.IsNil()
+	default:
+		return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
+	}
 }

@@ -14,24 +14,25 @@ import (
 )
 
 type (
-	IDReq          = pb.IDReq
-	IDsReq         = pb.IDsReq
-	MenuInfo       = pb.MenuInfo
-	MenuInfoList   = pb.MenuInfoList
-	Meta           = pb.Meta
-	Model          = pb.Model
-	NoDataResponse = pb.NoDataResponse
-	PageInfo       = pb.PageInfo
-	RoleInfo       = pb.RoleInfo
-	RoleListReq    = pb.RoleListReq
-	RoleListRes    = pb.RoleListRes
-	TokenInfo      = pb.TokenInfo
-	TokenInfoReq   = pb.TokenInfoReq
-	TokenInfoRes   = pb.TokenInfoRes
-	UserInfo       = pb.UserInfo
-	UserInfoRes    = pb.UserInfoRes
-	UsernameReq    = pb.UsernameReq
-	UsernameRes    = pb.UsernameRes
+	IDReq             = pb.IDReq
+	IDsReq            = pb.IDsReq
+	MenuInfo          = pb.MenuInfo
+	MenuInfoList      = pb.MenuInfoList
+	Meta              = pb.Meta
+	Model             = pb.Model
+	NoDataResponse    = pb.NoDataResponse
+	PageInfo          = pb.PageInfo
+	RoleInfo          = pb.RoleInfo
+	RoleListReq       = pb.RoleListReq
+	RoleListRes       = pb.RoleListRes
+	RoleUpdateRequest = pb.RoleUpdateRequest
+	TokenInfo         = pb.TokenInfo
+	TokenInfoReq      = pb.TokenInfoReq
+	TokenInfoRes      = pb.TokenInfoRes
+	UserInfo          = pb.UserInfo
+	UserInfoRes       = pb.UserInfoRes
+	UsernameReq       = pb.UsernameReq
+	UsernameRes       = pb.UsernameRes
 
 	Role interface {
 		// 获取角色列表
@@ -41,7 +42,7 @@ type (
 		// 删除角色信息
 		DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.CallOption) (*NoDataResponse, error)
 		// 更新角色
-		UpdateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error)
+		UpdateRole(ctx context.Context, in *RoleUpdateRequest, opts ...grpc.CallOption) (*NoDataResponse, error)
 		// 通过ID获取角色
 		GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*NoDataResponse, error)
 	}
@@ -76,7 +77,7 @@ func (m *defaultRole) DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.C
 }
 
 // 更新角色
-func (m *defaultRole) UpdateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error) {
+func (m *defaultRole) UpdateRole(ctx context.Context, in *RoleUpdateRequest, opts ...grpc.CallOption) (*NoDataResponse, error) {
 	client := pb.NewRoleClient(m.cli.Conn())
 	return client.UpdateRole(ctx, in, opts...)
 }

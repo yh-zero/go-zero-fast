@@ -53,7 +53,7 @@ func (l *GetRoleListLogic) GetRoleList(req *types.RoleListRequest) (resp *types.
 		fmt.Println("-0----------------------strconv.FormatUint(model.CreatedAt, 10)", strconv.FormatUint(model.CreatedAt, 10))
 		resp.List = append(resp.List, types.RoleInfo{
 			Model: types.Model{
-				ID:        int64(model.Id),
+				Id:        model.Id,
 				CreatedAt: fun.FormatTimestampToDate(model.CreatedAt),
 				UpdatedAt: fun.FormatTimestampToDate(model.UpdatedAt),
 				DeletedAt: fun.FormatTimestampToDate(model.DeletedAt),
