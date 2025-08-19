@@ -65,10 +65,33 @@ func UpdateFieldsByReflect(src interface{}) map[string]interface{} {
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		if field.Kind() == reflect.Ptr && !field.IsNil() {
-			updateMap[t.Field(i).Name] = field.Elem().Interface()
+			// 获取原始驼峰命名字段名
+			originalName := t.Field(i).Name
+			// 转换为蛇形命名
+			snakeName := camelToSnake(originalName)
+			// 使用转换后的名称作为键
+			updateMap[snakeName] = field.Elem().Interface()
 		}
 	}
 	return updateMap
+}
+
+// camelToSnake 将驼峰命名转换为蛇形命名
+func camelToSnake(s string) string {
+	var result []byte
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if c >= 'A' && c <= 'Z' {
+			// 如果是大写字母且不是第一个字符，在前面加下划线
+			if i > 0 {
+				result = append(result, '_')
+			}
+			result = append(result, c+32) // 转换为小写
+		} else {
+			result = append(result, c)
+		}
+	}
+	return string(result)
 }
 
 // BuildUpdateRequest 构建动态更新请求  -- 针对api层

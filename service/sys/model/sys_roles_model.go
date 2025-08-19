@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -307,18 +306,31 @@ func (m *customSysRolesModel) clearRoleCache(ids []uint64) {
 }
 
 func (m *customSysRolesModel) UpdateWithMap(ctx context.Context, id uint64, data map[string]interface{}) error {
-	if len(data) == 0 {
-		return errors.New("无有效更新字段")
-	}
+	// rpc里面做判断
+	//if len(data) == 0 {
+	//	return errors.New("无有效更新字段")
+	//}
 
 	// 添加更新时间戳
-	data["updated_at"] = time.Now()
+	//data["updated_at"] = time.Now() // 数据库同步更新了
 
 	query := fmt.Sprintf("UPDATE %s SET ", m.table)
 	var sets []string
 	var args []interface{}
 
+	allowedFields := map[string]bool{
+		"status":         true,
+		"name":           true,
+		"code":           false,
+		"default_router": true,
+		"remark":         true,
+		"sort":           true,
+	}
+
 	for k, v := range data {
+		if !allowedFields[k] { // 不在白名单则跳过
+			continue
+		}
 		sets = append(sets, fmt.Sprintf("%s = ?", k))
 		args = append(args, v)
 	}
