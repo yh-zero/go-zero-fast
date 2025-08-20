@@ -3,6 +3,7 @@ package role
 import (
 	"context"
 	"fmt"
+	"go-zero-fast/common/result/xerr"
 	"go-zero-fast/service/sys/rpc/pb"
 
 	"go-zero-fast/service/sys/api/internal/svc"
@@ -27,6 +28,10 @@ func NewCreateRoleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateRoleLogic) CreateRole(req *types.RoleInfo) (resp *types.MessageRes, err error) {
+	if req.Name == "" {
+		logx.WithContext(l.ctx).Errorf("角色名称不能为空")
+		return nil, xerr.NewErrMsg(fmt.Sprintf("角色名称不能为空"))
+	}
 	role, err := l.svcCtx.RoleRpc.CreateRole(l.ctx, &pb.RoleInfo{
 		Status: req.Status,
 		Name:   req.Name,
