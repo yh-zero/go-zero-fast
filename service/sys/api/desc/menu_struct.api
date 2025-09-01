@@ -35,7 +35,7 @@ type (
 		RealPath           string `json:"realPath,optional"`                                           // 动态路由的实际Path, 即去除路由的动态部分
 	}
 	MenuListRes {
-		List []MenuInfo `json:"data"`
+		List []MenuInfo `json:"list"`
 	}
 )
 

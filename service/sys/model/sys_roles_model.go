@@ -6,6 +6,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -44,15 +45,23 @@ func NewSysRolesModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option
 
 // 支持条件的分页查询方法
 func (m *defaultSysRolesModel) FindPageByName(ctx context.Context, name string, pageNo uint64, pageSize uint64) ([]*SysRoles, uint64, error) {
-	// 参数校验与默认值处理
-	if pageSize <= 0 || pageSize > 100 {
+	// 参数校验
+	if pageSize <= 0 || pageSize > 200 {
 		pageSize = 20
 	}
 	if pageNo <= 0 {
 		pageNo = 1
 	}
 
-	// 并发执行数据查询和总数统计
+	// 构建基础查询
+	baseQuery := fmt.Sprintf("SELECT %s FROM %s", sysRolesRows, m.table)
+	condition := ""
+	params := []interface{}{}
+	if name != "" {
+		condition = " WHERE name LIKE ?"
+		params = append(params, "%"+name+"%")
+	}
+
 	var (
 		list     []*SysRoles
 		total    uint64
@@ -63,87 +72,154 @@ func (m *defaultSysRolesModel) FindPageByName(ctx context.Context, name string, 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
-	// 1. 分页数据查询
+	// 1. 分页数据查询（简化重试逻辑）
 	go func() {
 		defer wg.Done()
-
-		baseQuery := fmt.Sprintf("SELECT %s FROM %s", sysRolesRows, m.table)
-		condition := ""
-		params := []interface{}{}
-
-		// 添加名称过滤条件
-		if name != "" {
-			condition = " WHERE name LIKE ?"
-			params = append(params, "%"+name+"%")
-		}
-
-		// 计算偏移量
 		offset := (pageNo - 1) * pageSize
-
-		// 执行查询
 		query := baseQuery + condition + " ORDER BY id DESC LIMIT ?, ?"
-		params = append(params, offset, pageSize)
-
-		listErr = m.QueryRowsNoCacheCtx(ctx, &list, query, params...)
+		queryParams := append(params, offset, pageSize)
+		listErr = m.QueryRowsNoCacheCtx(ctx, &list, query, queryParams...) // 直接查询，移除重试
 	}()
 
-	// 2. 总数查询
+	// 2. 总数查询（保留缓存优化）
 	go func() {
 		defer wg.Done()
-
-		// 根据查询条件生成唯一的缓存键
-		cacheKey := cacheGoZeroFastSysRolesTotalPrefix
-		if name != "" {
-			cacheKey += ":name:" + name
-		} else {
+		cacheKey := fmt.Sprintf("%s:name:%s", cacheGoZeroFastSysRolesTotalPrefix, name)
+		if name == "" {
 			cacheKey += ":all"
 		}
 
-		// 先尝试从缓存获取
+		// 缓存命中则跳过查询
 		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
 			return
 		}
 
-		// 构建总数查询
-		baseQuery := fmt.Sprintf("SELECT COUNT(id) FROM %s", m.table)
-		condition := ""
-		params := []interface{}{}
-
-		if name != "" {
-			condition = " WHERE name LIKE ?"
-			params = append(params, "%"+name+"%")
-		}
-
-		query := baseQuery + condition
-
-		// 执行查询
+		query := fmt.Sprintf("SELECT COUNT(id) FROM %s", m.table) + condition
 		totalErr = m.QueryRowNoCacheCtx(ctx, &total, query, params...)
 
-		// 异步缓存结果
-		if totalErr == nil {
-			exp := 60 * time.Second
-			if name == "" {
-				exp = 5 * time.Minute
+		// 缓存结果（防雪崩逻辑保留）
+		if totalErr == nil && total > 0 {
+			exp := 5 * time.Minute
+			if name != "" {
+				exp = time.Duration(60+rand.Intn(30)) * time.Second
 			}
-
-			go func() {
-				_ = m.SetCacheWithExpire(cacheKey, total, exp)
-			}()
+			go func() { _ = m.SetCacheWithExpire(cacheKey, total, exp) }()
 		}
 	}()
 
 	wg.Wait()
 
-	// 错误处理
+	// 统一错误处理（使用早期返回）
 	if listErr != nil {
-		return nil, 0, listErr
+		return nil, 0, fmt.Errorf("list query failed: %w", listErr)
 	}
 	if totalErr != nil {
-		return nil, 0, totalErr
+		return nil, 0, fmt.Errorf("count query failed: %w", totalErr)
 	}
-
 	return list, total, nil
 }
+
+//func (m *defaultSysRolesModel) FindPageByName(ctx context.Context, name string, pageNo uint64, pageSize uint64) ([]*SysRoles, uint64, error) {
+//	// 参数校验与默认值处理
+//	if pageSize <= 0 || pageSize > 100 {
+//		pageSize = 20
+//	}
+//	if pageNo <= 0 {
+//		pageNo = 1
+//	}
+//
+//	// 并发执行数据查询和总数统计
+//	var (
+//		list     []*SysRoles
+//		total    uint64
+//		listErr  error
+//		totalErr error
+//	)
+//
+//	wg := sync.WaitGroup{}
+//	wg.Add(2)
+//
+//	// 1. 分页数据查询
+//	go func() {
+//		defer wg.Done()
+//
+//		baseQuery := fmt.Sprintf("SELECT %s FROM %s", sysRolesRows, m.table)
+//		condition := ""
+//		params := []interface{}{}
+//
+//		// 添加名称过滤条件
+//		if name != "" {
+//			condition = " WHERE name LIKE ?"
+//			params = append(params, "%"+name+"%")
+//		}
+//
+//		// 计算偏移量
+//		offset := (pageNo - 1) * pageSize
+//
+//		// 执行查询
+//		query := baseQuery + condition + " ORDER BY id DESC LIMIT ?, ?"
+//		params = append(params, offset, pageSize)
+//
+//		listErr = m.QueryRowsNoCacheCtx(ctx, &list, query, params...)
+//	}()
+//
+//	// 2. 总数查询
+//	go func() {
+//		defer wg.Done()
+//
+//		// 根据查询条件生成唯一的缓存键
+//		cacheKey := cacheGoZeroFastSysRolesTotalPrefix
+//		if name != "" {
+//			cacheKey += ":name:" + name
+//		} else {
+//			cacheKey += ":all"
+//		}
+//
+//		// 先尝试从缓存获取
+//		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
+//			return
+//		}
+//
+//		// 构建总数查询
+//		baseQuery := fmt.Sprintf("SELECT COUNT(id) FROM %s", m.table)
+//		condition := ""
+//		params := []interface{}{}
+//
+//		if name != "" {
+//			condition = " WHERE name LIKE ?"
+//			params = append(params, "%"+name+"%")
+//		}
+//
+//		query := baseQuery + condition
+//
+//		// 执行查询
+//		totalErr = m.QueryRowNoCacheCtx(ctx, &total, query, params...)
+//
+//		// 异步缓存结果
+//		if totalErr == nil {
+//			exp := 60 * time.Second
+//			if name == "" {
+//				exp = 5 * time.Minute
+//			}
+//
+//			go func() {
+//				_ = m.SetCacheWithExpire(cacheKey, total, exp)
+//			}()
+//		}
+//	}()
+//
+//	wg.Wait()
+//
+//	// 错误处理
+//	if listErr != nil {
+//		return nil, 0, listErr
+//	}
+//	if totalErr != nil {
+//		return nil, 0, totalErr
+//	}
+//
+//	return list, total, nil
+//}
 
 // 分页查询角色列表
 /*

@@ -55,7 +55,7 @@ type MenuInfo struct {
 }
 
 type MenuListRes struct {
-	List []MenuInfo `json:"data"`
+	List []MenuInfo `json:"list"`
 }
 
 type MessageRes struct {
