@@ -24,7 +24,7 @@ func NewGetRoleByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetRo
 }
 
 // 通过ID获取角色
-func (l *GetRoleByIdLogic) GetRoleById(in *pb.IDReq) (*pb.NoDataResponse, error) {
+func (l *GetRoleByIdLogic) GetRoleById(in *pb.IDRequest) (*pb.NoDataResponse, error) {
 	// todo: add your logic here and delete this line
 
 	return &pb.NoDataResponse{}, nil

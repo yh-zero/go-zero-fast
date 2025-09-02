@@ -30,7 +30,7 @@ func NewGetRoleListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetRo
 
 func (l *GetRoleListLogic) GetRoleList(req *types.RoleListRequest) (resp *types.RoleListRes, err error) {
 	fmt.Println("-------GetRoleList", req)
-	roles, err := l.svcCtx.RoleRpc.GetRoleList(l.ctx, &pb.RoleListReq{
+	roles, err := l.svcCtx.RoleRpc.GetRoleList(l.ctx, &pb.RoleListRequest{
 		PageInfo: &pb.PageInfo{
 			PageNo:   req.PageNo,
 			PageSize: req.PageSize,

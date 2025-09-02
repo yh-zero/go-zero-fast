@@ -5,10 +5,16 @@ import (
 	"fmt"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"golang.org/x/sync/errgroup"
 	"strings"
+	"time"
 )
 
 var _ SysMenusModel = (*customSysMenusModel)(nil)
+
+var (
+	cacheGoZeroFastSysMenusTotalPrefix = "cache:goZeroFast:sysMenus:total"
+)
 
 type (
 	// SysMenusModel is an interface to be customized, add more methods here,
@@ -16,6 +22,7 @@ type (
 	SysMenusModel interface {
 		sysMenusModel
 		FindMenusByIds(ctx context.Context, ids []int64) ([]*SysMenus, error)
+		FindMenusList(ctx context.Context, pageNo uint64, pageSize uint64) ([]*SysMenus, uint64, error)
 	}
 
 	customSysMenusModel struct {
@@ -28,6 +35,69 @@ func NewSysMenusModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option
 	return &customSysMenusModel{
 		defaultSysMenusModel: newSysMenusModel(conn, c, opts...),
 	}
+}
+
+// 分页查询
+func (m defaultSysMenusModel) FindMenusList(ctx context.Context, pageNo uint64, pageSize uint64) ([]*SysMenus, uint64, error) {
+	// 参数默认值设置
+	if pageSize == 0 || pageSize > 200 {
+		pageSize = 20
+	}
+	if pageNo == 0 {
+		pageNo = 1
+	}
+
+	// 构建查询条件（这里保留了原有的条件构建方式，可根据实际业务简化）
+	condition := ""
+	params := []interface{}{}
+	baseQuery := fmt.Sprintf("SELECT %s FROM %s%s", sysMenusRows, m.table, condition)
+	countQuery := fmt.Sprintf("SELECT COUNT(id) FROM %s%s", m.table, condition)
+
+	var (
+		list  []*SysMenus
+		total uint64
+	)
+
+	// 使用 errgroup 进行并发查询
+	g, ctx := errgroup.WithContext(ctx)
+
+	// 并发获取分页数据
+	g.Go(func() error {
+		offset := (pageNo - 1) * pageSize
+		query := baseQuery + " ORDER BY sort ASC LIMIT ?, ?"
+		queryParams := append(params, offset, pageSize)
+		return m.QueryRowsNoCacheCtx(ctx, &list, query, queryParams...)
+	})
+
+	// 并发获取总数（带缓存）
+	g.Go(func() error {
+		cacheKey := fmt.Sprintf("%s:all", cacheGoZeroFastSysMenusTotalPrefix)
+
+		// 尝试从缓存获取
+		if err := m.GetCacheCtx(ctx, cacheKey, &total); err == nil {
+			return nil
+		}
+
+		// 缓存未命中，查询数据库
+		if err := m.QueryRowNoCacheCtx(ctx, &total, countQuery, params...); err != nil {
+			return err
+		}
+
+		// 异步设置缓存（防雪崩）
+		if total > 0 {
+			go func() {
+				_ = m.SetCacheWithExpire(cacheKey, total, time.Minute)
+			}()
+		}
+		return nil
+	})
+
+	// 等待所有并发操作完成
+	if err := g.Wait(); err != nil {
+		return nil, 0, fmt.Errorf("query failed: %w", err)
+	}
+
+	return list, total, nil
 }
 
 //func (m *customSysMenusModel) FindByIds(ctx context.Context, ids []int64) ([]*SysMenus, error) {

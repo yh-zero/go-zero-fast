@@ -14,8 +14,8 @@ import (
 )
 
 type (
-	IDReq             = pb.IDReq
-	IDsReq            = pb.IDsReq
+	IDRequest         = pb.IDRequest
+	IDsRequest        = pb.IDsRequest
 	MenuInfo          = pb.MenuInfo
 	MenuInfoList      = pb.MenuInfoList
 	Meta              = pb.Meta
@@ -23,20 +23,22 @@ type (
 	NoDataResponse    = pb.NoDataResponse
 	PageInfo          = pb.PageInfo
 	RoleInfo          = pb.RoleInfo
-	RoleListReq       = pb.RoleListReq
-	RoleListRes       = pb.RoleListRes
+	RoleListRequest   = pb.RoleListRequest
+	RoleListResponse  = pb.RoleListResponse
 	RoleUpdateRequest = pb.RoleUpdateRequest
 	TokenInfo         = pb.TokenInfo
-	TokenInfoReq      = pb.TokenInfoReq
-	TokenInfoRes      = pb.TokenInfoRes
+	TokenInfoRequest  = pb.TokenInfoRequest
+	TokenInfoResponse = pb.TokenInfoResponse
 	UserInfo          = pb.UserInfo
-	UserInfoRes       = pb.UserInfoRes
-	UsernameReq       = pb.UsernameReq
-	UsernameRes       = pb.UsernameRes
+	UserInfoResponse  = pb.UserInfoResponse
+	UsernameRequest   = pb.UsernameRequest
+	UsernameResponse  = pb.UsernameResponse
 
 	Menu interface {
 		// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-		GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error)
+		GetMenuListByRoleId(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*MenuInfoList, error)
+		// 获取菜单列表
+		GetMenuList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*MenuInfoList, error)
 	}
 
 	defaultMenu struct {
@@ -51,7 +53,13 @@ func NewMenu(cli zrpc.Client) Menu {
 }
 
 // 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-func (m *defaultMenu) GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error) {
+func (m *defaultMenu) GetMenuListByRoleId(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*MenuInfoList, error) {
 	client := pb.NewMenuClient(m.cli.Conn())
 	return client.GetMenuListByRoleId(ctx, in, opts...)
+}
+
+// 获取菜单列表
+func (m *defaultMenu) GetMenuList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*MenuInfoList, error) {
+	client := pb.NewMenuClient(m.cli.Conn())
+	return client.GetMenuList(ctx, in, opts...)
 }

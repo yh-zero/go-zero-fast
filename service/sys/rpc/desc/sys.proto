@@ -4,11 +4,11 @@ option go_package = "./pb";
 
 package pb;
 
-message IDReq {
+message IDRequest {
   uint64 id = 1;
 }
 
-message IDsReq {
+message IDsRequest {
   repeated uint64 ids = 1;
 }
 
@@ -28,7 +28,7 @@ message Model {
 }
 
 
-message UsernameReq {
+message UsernameRequest {
   string username = 1;
 }
 
@@ -55,7 +55,7 @@ message UserInfo {
     uint64 updatedAt = 18;
 }
 
-message UsernameRes {
+message UsernameResponse {
   UserInfo userInfo = 1;
 }
 
@@ -71,16 +71,16 @@ message TokenInfo {
    uint64 updatedAt = 9;
 }
 
-message TokenInfoReq {
+message TokenInfoRequest {
   TokenInfo tokenInfo = 1;
 }
 
-message TokenInfoRes {
+message TokenInfoResponse {
   uint64 id = 1;
   string token = 2;
 }
 
-message UserInfoRes {
+message UserInfoResponse {
   UserInfo userInfo = 1;
 }
 
@@ -135,13 +135,13 @@ message RoleInfo {
 
 }
 
-message RoleListReq {
+message RoleListRequest {
   PageInfo pageInfo = 1;
   string name = 2;
   string code = 3;
   uint64 Id = 4;
 }
-message RoleListRes {
+message RoleListResponse {
   uint64 total = 1;
   uint64 cursor = 2;
   repeated RoleInfo roleInfo = 3;
@@ -160,40 +160,49 @@ message RoleUpdateRequest {
 
 
 //=============================== 隔离结构体 ===========================
+//=============================== user ===========================
 
 service User {
   // 根据用户名获取用户详情
-  rpc getUserByUsername (UsernameReq) returns (UsernameRes);
+  rpc getUserByUsername (UsernameRequest) returns (UsernameResponse);
 
   //获取用户详细信息
-  rpc getUserInfoById (IDReq) returns (UserInfoRes);
+  rpc getUserInfoById (IDRequest) returns (UserInfoResponse);
 }
 
+//=============================== Token ===========================
 service Token {
   // 生成Token
-  rpc createToken (TokenInfoReq) returns (TokenInfoRes);
+  rpc createToken (TokenInfoRequest) returns (TokenInfoResponse);
 }
 
+
+//=============================== Menu ===========================
 service Menu {
   // 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-  rpc getMenuListByRoleId (IDReq) returns (MenuInfoList);
+  rpc getMenuListByRoleId (IDRequest) returns (MenuInfoList);
 
   // 根据角色ids 获取菜单
   //  rpc getMenuListByRoleIds (IDSReq) returns (MenuInfoList);
+
+  // 获取菜单列表
+  rpc getMenuList (PageInfo) returns (MenuInfoList);
 }
 
+
+//=============================== Role ===========================
 service Role {
 
   // 获取角色列表
-  rpc getRoleList (RoleListReq) returns (RoleListRes);
+  rpc getRoleList (RoleListRequest) returns (RoleListResponse);
   // 创建新角色
   rpc createRole (RoleInfo) returns (NoDataResponse);
   // 删除角色信息
-  rpc deleteRole (IDsReq) returns (NoDataResponse);
+  rpc deleteRole (IDsRequest) returns (NoDataResponse);
   // 更新角色
   rpc updateRole (RoleUpdateRequest) returns (NoDataResponse);
   // 通过ID获取角色
-  rpc getRoleById (IDReq) returns (NoDataResponse);
+  rpc getRoleById (IDRequest) returns (NoDataResponse);
 
 
 

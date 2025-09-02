@@ -24,7 +24,7 @@ func NewTokenServer(svcCtx *svc.ServiceContext) *TokenServer {
 }
 
 // 生成Token
-func (s *TokenServer) CreateToken(ctx context.Context, in *pb.TokenInfoReq) (*pb.TokenInfoRes, error) {
+func (s *TokenServer) CreateToken(ctx context.Context, in *pb.TokenInfoRequest) (*pb.TokenInfoResponse, error) {
 	l := tokenlogic.NewCreateTokenLogic(ctx, s.svcCtx)
 	return l.CreateToken(in)
 }

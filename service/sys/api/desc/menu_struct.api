@@ -34,8 +34,13 @@ type (
 		DynamicLevel       uint64 `json:"dynamicLevel" validate:"number,lt=30"`                        // 动态路由可打开Tab页数
 		RealPath           string `json:"realPath,optional"`                                           // 动态路由的实际Path, 即去除路由的动态部分
 	}
-	MenuListRes {
+	MenuListResponse {
 		List []MenuInfo `json:"list"`
+	}
+
+	MenuInfoListResponse{
+		List	[]MenuInfo	`json:"list"`
+		Total	uint64		`json:"total"`
 	}
 )
 

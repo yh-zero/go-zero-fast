@@ -29,7 +29,7 @@ func NewCreateTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Creat
 }
 
 // 生成Token
-func (l *CreateTokenLogic) CreateToken(in *pb.TokenInfoReq) (*pb.TokenInfoRes, error) {
+func (l *CreateTokenLogic) CreateToken(in *pb.TokenInfoRequest) (*pb.TokenInfoResponse, error) {
 	id, err := snowflake.GenID()
 	fmt.Println("========= snowflake id ", id)
 	if err != nil {
@@ -53,7 +53,7 @@ func (l *CreateTokenLogic) CreateToken(in *pb.TokenInfoReq) (*pb.TokenInfoRes, e
 		return nil, err
 	}
 
-	return &pb.TokenInfoRes{
+	return &pb.TokenInfoResponse{
 		Id:    id,
 		Token: "",
 	}, nil

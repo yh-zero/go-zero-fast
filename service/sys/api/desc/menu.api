@@ -14,7 +14,12 @@ import (
 service Ysy {
     @doc "获取菜单列表 -- 对应的用户角色的权限"
     @handler getMenuListByRole
-    get /menu/role/list returns (MenuListRes)
+    get /menu/role/list returns (MenuListResponse)
+
+
+    @doc "获取菜单列表"
+    @handler getMenuList
+    get /menu/list (PageInfo) returns (MenuInfoListResponse)
 
 }
 

@@ -23,9 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	// 根据用户名获取用户详情
-	GetUserByUsername(ctx context.Context, in *UsernameReq, opts ...grpc.CallOption) (*UsernameRes, error)
+	GetUserByUsername(ctx context.Context, in *UsernameRequest, opts ...grpc.CallOption) (*UsernameResponse, error)
 	//获取用户详细信息
-	GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error)
+	GetUserInfoById(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 }
 
 type userClient struct {
@@ -36,8 +36,8 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
 }
 
-func (c *userClient) GetUserByUsername(ctx context.Context, in *UsernameReq, opts ...grpc.CallOption) (*UsernameRes, error) {
-	out := new(UsernameRes)
+func (c *userClient) GetUserByUsername(ctx context.Context, in *UsernameRequest, opts ...grpc.CallOption) (*UsernameResponse, error) {
+	out := new(UsernameResponse)
 	err := c.cc.Invoke(ctx, "/pb.User/getUserByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -45,8 +45,8 @@ func (c *userClient) GetUserByUsername(ctx context.Context, in *UsernameReq, opt
 	return out, nil
 }
 
-func (c *userClient) GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error) {
-	out := new(UserInfoRes)
+func (c *userClient) GetUserInfoById(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
+	out := new(UserInfoResponse)
 	err := c.cc.Invoke(ctx, "/pb.User/getUserInfoById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,9 +59,9 @@ func (c *userClient) GetUserInfoById(ctx context.Context, in *IDReq, opts ...grp
 // for forward compatibility
 type UserServer interface {
 	// 根据用户名获取用户详情
-	GetUserByUsername(context.Context, *UsernameReq) (*UsernameRes, error)
+	GetUserByUsername(context.Context, *UsernameRequest) (*UsernameResponse, error)
 	//获取用户详细信息
-	GetUserInfoById(context.Context, *IDReq) (*UserInfoRes, error)
+	GetUserInfoById(context.Context, *IDRequest) (*UserInfoResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -69,10 +69,10 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
-func (UnimplementedUserServer) GetUserByUsername(context.Context, *UsernameReq) (*UsernameRes, error) {
+func (UnimplementedUserServer) GetUserByUsername(context.Context, *UsernameRequest) (*UsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByUsername not implemented")
 }
-func (UnimplementedUserServer) GetUserInfoById(context.Context, *IDReq) (*UserInfoRes, error) {
+func (UnimplementedUserServer) GetUserInfoById(context.Context, *IDRequest) (*UserInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfoById not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
@@ -89,7 +89,7 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 }
 
 func _User_GetUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UsernameReq)
+	in := new(UsernameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -101,13 +101,13 @@ func _User_GetUserByUsername_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/pb.User/getUserByUsername",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetUserByUsername(ctx, req.(*UsernameReq))
+		return srv.(UserServer).GetUserByUsername(ctx, req.(*UsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _User_GetUserInfoById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IDReq)
+	in := new(IDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func _User_GetUserInfoById_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/pb.User/getUserInfoById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetUserInfoById(ctx, req.(*IDReq))
+		return srv.(UserServer).GetUserInfoById(ctx, req.(*IDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -149,7 +149,7 @@ var User_ServiceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TokenClient interface {
 	// 生成Token
-	CreateToken(ctx context.Context, in *TokenInfoReq, opts ...grpc.CallOption) (*TokenInfoRes, error)
+	CreateToken(ctx context.Context, in *TokenInfoRequest, opts ...grpc.CallOption) (*TokenInfoResponse, error)
 }
 
 type tokenClient struct {
@@ -160,8 +160,8 @@ func NewTokenClient(cc grpc.ClientConnInterface) TokenClient {
 	return &tokenClient{cc}
 }
 
-func (c *tokenClient) CreateToken(ctx context.Context, in *TokenInfoReq, opts ...grpc.CallOption) (*TokenInfoRes, error) {
-	out := new(TokenInfoRes)
+func (c *tokenClient) CreateToken(ctx context.Context, in *TokenInfoRequest, opts ...grpc.CallOption) (*TokenInfoResponse, error) {
+	out := new(TokenInfoResponse)
 	err := c.cc.Invoke(ctx, "/pb.Token/createToken", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -174,7 +174,7 @@ func (c *tokenClient) CreateToken(ctx context.Context, in *TokenInfoReq, opts ..
 // for forward compatibility
 type TokenServer interface {
 	// 生成Token
-	CreateToken(context.Context, *TokenInfoReq) (*TokenInfoRes, error)
+	CreateToken(context.Context, *TokenInfoRequest) (*TokenInfoResponse, error)
 	mustEmbedUnimplementedTokenServer()
 }
 
@@ -182,7 +182,7 @@ type TokenServer interface {
 type UnimplementedTokenServer struct {
 }
 
-func (UnimplementedTokenServer) CreateToken(context.Context, *TokenInfoReq) (*TokenInfoRes, error) {
+func (UnimplementedTokenServer) CreateToken(context.Context, *TokenInfoRequest) (*TokenInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateToken not implemented")
 }
 func (UnimplementedTokenServer) mustEmbedUnimplementedTokenServer() {}
@@ -199,7 +199,7 @@ func RegisterTokenServer(s grpc.ServiceRegistrar, srv TokenServer) {
 }
 
 func _Token_CreateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TokenInfoReq)
+	in := new(TokenInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -211,7 +211,7 @@ func _Token_CreateToken_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/pb.Token/createToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TokenServer).CreateToken(ctx, req.(*TokenInfoReq))
+		return srv.(TokenServer).CreateToken(ctx, req.(*TokenInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -237,7 +237,9 @@ var Token_ServiceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MenuClient interface {
 	// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-	GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error)
+	GetMenuListByRoleId(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*MenuInfoList, error)
+	// 获取菜单列表
+	GetMenuList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*MenuInfoList, error)
 }
 
 type menuClient struct {
@@ -248,9 +250,18 @@ func NewMenuClient(cc grpc.ClientConnInterface) MenuClient {
 	return &menuClient{cc}
 }
 
-func (c *menuClient) GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*MenuInfoList, error) {
+func (c *menuClient) GetMenuListByRoleId(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*MenuInfoList, error) {
 	out := new(MenuInfoList)
 	err := c.cc.Invoke(ctx, "/pb.Menu/getMenuListByRoleId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *menuClient) GetMenuList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*MenuInfoList, error) {
+	out := new(MenuInfoList)
+	err := c.cc.Invoke(ctx, "/pb.Menu/getMenuList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +273,9 @@ func (c *menuClient) GetMenuListByRoleId(ctx context.Context, in *IDReq, opts ..
 // for forward compatibility
 type MenuServer interface {
 	// 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-	GetMenuListByRoleId(context.Context, *IDReq) (*MenuInfoList, error)
+	GetMenuListByRoleId(context.Context, *IDRequest) (*MenuInfoList, error)
+	// 获取菜单列表
+	GetMenuList(context.Context, *PageInfo) (*MenuInfoList, error)
 	mustEmbedUnimplementedMenuServer()
 }
 
@@ -270,8 +283,11 @@ type MenuServer interface {
 type UnimplementedMenuServer struct {
 }
 
-func (UnimplementedMenuServer) GetMenuListByRoleId(context.Context, *IDReq) (*MenuInfoList, error) {
+func (UnimplementedMenuServer) GetMenuListByRoleId(context.Context, *IDRequest) (*MenuInfoList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMenuListByRoleId not implemented")
+}
+func (UnimplementedMenuServer) GetMenuList(context.Context, *PageInfo) (*MenuInfoList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMenuList not implemented")
 }
 func (UnimplementedMenuServer) mustEmbedUnimplementedMenuServer() {}
 
@@ -287,7 +303,7 @@ func RegisterMenuServer(s grpc.ServiceRegistrar, srv MenuServer) {
 }
 
 func _Menu_GetMenuListByRoleId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IDReq)
+	in := new(IDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -299,7 +315,25 @@ func _Menu_GetMenuListByRoleId_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/pb.Menu/getMenuListByRoleId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MenuServer).GetMenuListByRoleId(ctx, req.(*IDReq))
+		return srv.(MenuServer).GetMenuListByRoleId(ctx, req.(*IDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Menu_GetMenuList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PageInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MenuServer).GetMenuList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Menu/getMenuList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MenuServer).GetMenuList(ctx, req.(*PageInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -315,6 +349,10 @@ var Menu_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "getMenuListByRoleId",
 			Handler:    _Menu_GetMenuListByRoleId_Handler,
 		},
+		{
+			MethodName: "getMenuList",
+			Handler:    _Menu_GetMenuList_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "service/sys/rpc/desc/sys.proto",
@@ -325,15 +363,15 @@ var Menu_ServiceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RoleClient interface {
 	// 获取角色列表
-	GetRoleList(ctx context.Context, in *RoleListReq, opts ...grpc.CallOption) (*RoleListRes, error)
+	GetRoleList(ctx context.Context, in *RoleListRequest, opts ...grpc.CallOption) (*RoleListResponse, error)
 	// 创建新角色
 	CreateRole(ctx context.Context, in *RoleInfo, opts ...grpc.CallOption) (*NoDataResponse, error)
 	// 删除角色信息
-	DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.CallOption) (*NoDataResponse, error)
+	DeleteRole(ctx context.Context, in *IDsRequest, opts ...grpc.CallOption) (*NoDataResponse, error)
 	// 更新角色
 	UpdateRole(ctx context.Context, in *RoleUpdateRequest, opts ...grpc.CallOption) (*NoDataResponse, error)
 	// 通过ID获取角色
-	GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*NoDataResponse, error)
+	GetRoleById(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*NoDataResponse, error)
 }
 
 type roleClient struct {
@@ -344,8 +382,8 @@ func NewRoleClient(cc grpc.ClientConnInterface) RoleClient {
 	return &roleClient{cc}
 }
 
-func (c *roleClient) GetRoleList(ctx context.Context, in *RoleListReq, opts ...grpc.CallOption) (*RoleListRes, error) {
-	out := new(RoleListRes)
+func (c *roleClient) GetRoleList(ctx context.Context, in *RoleListRequest, opts ...grpc.CallOption) (*RoleListResponse, error) {
+	out := new(RoleListResponse)
 	err := c.cc.Invoke(ctx, "/pb.Role/getRoleList", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -362,7 +400,7 @@ func (c *roleClient) CreateRole(ctx context.Context, in *RoleInfo, opts ...grpc.
 	return out, nil
 }
 
-func (c *roleClient) DeleteRole(ctx context.Context, in *IDsReq, opts ...grpc.CallOption) (*NoDataResponse, error) {
+func (c *roleClient) DeleteRole(ctx context.Context, in *IDsRequest, opts ...grpc.CallOption) (*NoDataResponse, error) {
 	out := new(NoDataResponse)
 	err := c.cc.Invoke(ctx, "/pb.Role/deleteRole", in, out, opts...)
 	if err != nil {
@@ -380,7 +418,7 @@ func (c *roleClient) UpdateRole(ctx context.Context, in *RoleUpdateRequest, opts
 	return out, nil
 }
 
-func (c *roleClient) GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*NoDataResponse, error) {
+func (c *roleClient) GetRoleById(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*NoDataResponse, error) {
 	out := new(NoDataResponse)
 	err := c.cc.Invoke(ctx, "/pb.Role/getRoleById", in, out, opts...)
 	if err != nil {
@@ -394,15 +432,15 @@ func (c *roleClient) GetRoleById(ctx context.Context, in *IDReq, opts ...grpc.Ca
 // for forward compatibility
 type RoleServer interface {
 	// 获取角色列表
-	GetRoleList(context.Context, *RoleListReq) (*RoleListRes, error)
+	GetRoleList(context.Context, *RoleListRequest) (*RoleListResponse, error)
 	// 创建新角色
 	CreateRole(context.Context, *RoleInfo) (*NoDataResponse, error)
 	// 删除角色信息
-	DeleteRole(context.Context, *IDsReq) (*NoDataResponse, error)
+	DeleteRole(context.Context, *IDsRequest) (*NoDataResponse, error)
 	// 更新角色
 	UpdateRole(context.Context, *RoleUpdateRequest) (*NoDataResponse, error)
 	// 通过ID获取角色
-	GetRoleById(context.Context, *IDReq) (*NoDataResponse, error)
+	GetRoleById(context.Context, *IDRequest) (*NoDataResponse, error)
 	mustEmbedUnimplementedRoleServer()
 }
 
@@ -410,19 +448,19 @@ type RoleServer interface {
 type UnimplementedRoleServer struct {
 }
 
-func (UnimplementedRoleServer) GetRoleList(context.Context, *RoleListReq) (*RoleListRes, error) {
+func (UnimplementedRoleServer) GetRoleList(context.Context, *RoleListRequest) (*RoleListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRoleList not implemented")
 }
 func (UnimplementedRoleServer) CreateRole(context.Context, *RoleInfo) (*NoDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRole not implemented")
 }
-func (UnimplementedRoleServer) DeleteRole(context.Context, *IDsReq) (*NoDataResponse, error) {
+func (UnimplementedRoleServer) DeleteRole(context.Context, *IDsRequest) (*NoDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
 }
 func (UnimplementedRoleServer) UpdateRole(context.Context, *RoleUpdateRequest) (*NoDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRole not implemented")
 }
-func (UnimplementedRoleServer) GetRoleById(context.Context, *IDReq) (*NoDataResponse, error) {
+func (UnimplementedRoleServer) GetRoleById(context.Context, *IDRequest) (*NoDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRoleById not implemented")
 }
 func (UnimplementedRoleServer) mustEmbedUnimplementedRoleServer() {}
@@ -439,7 +477,7 @@ func RegisterRoleServer(s grpc.ServiceRegistrar, srv RoleServer) {
 }
 
 func _Role_GetRoleList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RoleListReq)
+	in := new(RoleListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -451,7 +489,7 @@ func _Role_GetRoleList_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/pb.Role/getRoleList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServer).GetRoleList(ctx, req.(*RoleListReq))
+		return srv.(RoleServer).GetRoleList(ctx, req.(*RoleListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -475,7 +513,7 @@ func _Role_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Role_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IDsReq)
+	in := new(IDsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -487,7 +525,7 @@ func _Role_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/pb.Role/deleteRole",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServer).DeleteRole(ctx, req.(*IDsReq))
+		return srv.(RoleServer).DeleteRole(ctx, req.(*IDsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -511,7 +549,7 @@ func _Role_UpdateRole_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Role_GetRoleById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IDReq)
+	in := new(IDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -523,7 +561,7 @@ func _Role_GetRoleById_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/pb.Role/getRoleById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServer).GetRoleById(ctx, req.(*IDReq))
+		return srv.(RoleServer).GetRoleById(ctx, req.(*IDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

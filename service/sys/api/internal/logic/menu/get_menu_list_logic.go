@@ -3,43 +3,46 @@ package menu
 import (
 	"context"
 	"fmt"
-	"go-zero-fast/common/ctxJwt"
+	"go-zero-fast/common/fun"
+	"go-zero-fast/service/sys/rpc/pb"
+
 	"go-zero-fast/service/sys/api/internal/svc"
 	"go-zero-fast/service/sys/api/internal/types"
-	"go-zero-fast/service/sys/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type GetMenuListByRoleLogic struct {
+type GetMenuListLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-// 获取菜单列表 -- 对应的用户角色的权限
-func NewGetMenuListByRoleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetMenuListByRoleLogic {
-	return &GetMenuListByRoleLogic{
+// 获取菜单列表
+func NewGetMenuListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetMenuListLogic {
+	return &GetMenuListLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *GetMenuListByRoleLogic) GetMenuListByRole() (resp *types.MenuListResponse, err error) {
-	jwtRoleId := ctxJwt.GetJwtDataRoleId(l.ctx)
-	menuList, err := l.svcCtx.MenuRPC.GetMenuListByRoleId(l.ctx, &pb.IDRequest{Id: jwtRoleId})
-	fmt.Println("====== menuList", menuList)
+func (l *GetMenuListLogic) GetMenuList(req *types.PageInfo) (resp *types.MenuInfoListResponse, err error) {
+	menuListRpc, err := l.svcCtx.MenuRPC.GetMenuList(l.ctx, &pb.PageInfo{
+		PageNo:   req.PageNo,
+		PageSize: req.PageSize,
+	})
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("1111111111111111111")
+	resp = &types.MenuInfoListResponse{} // 不初始化会报错
+	resp.Total = menuListRpc.Total
+	fmt.Println("2222222222222222222222")
 
-	resp = &types.MenuListResponse{}
-	fmt.Println("---------------- 1111")
-
-	for _, v := range menuList.MenuInfo {
+	for _, v := range menuListRpc.MenuInfo {
 		resp.List = append(resp.List, types.MenuInfo{
-			Model:       types.Model{Id: v.Id},
+			//Trans:       "",
 			Level:       v.Level,
 			ParentId:    v.ParentId,
 			Path:        v.Path,
@@ -51,6 +54,11 @@ func (l *GetMenuListByRoleLogic) GetMenuListByRole() (resp *types.MenuListRespon
 			MenuType:    v.MenuType,
 			ServiceName: v.ServiceName,
 			Permission:  v.Permission,
+			Model: types.Model{
+				Id:        v.Id,
+				CreatedAt: fun.FormatTimestampToDate(v.CreatedAt),
+				UpdatedAt: fun.FormatTimestampToDate(v.UpdatedAt),
+			},
 			Meta: types.Meta{
 				Title:              v.Meta.Title,
 				Icon:               v.Meta.Icon,
@@ -68,7 +76,6 @@ func (l *GetMenuListByRoleLogic) GetMenuListByRole() (resp *types.MenuListRespon
 		})
 
 	}
-	fmt.Println("---------------- 22222")
 
-	return resp, nil
+	return
 }

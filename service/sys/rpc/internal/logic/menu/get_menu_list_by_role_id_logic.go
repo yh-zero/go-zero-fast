@@ -25,7 +25,7 @@ func NewGetMenuListByRoleIdLogic(ctx context.Context, svcCtx *svc.ServiceContext
 }
 
 // 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-func (l *GetMenuListByRoleIdLogic) GetMenuListByRoleId(in *pb.IDReq) (*pb.MenuInfoList, error) {
+func (l *GetMenuListByRoleIdLogic) GetMenuListByRoleId(in *pb.IDRequest) (*pb.MenuInfoList, error) {
 	menuIds, err := l.svcCtx.RoleMenusModel.FindMenuIdsByRoleId(l.ctx, in.Id)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("GetMenuListByRoleId 获取用户菜单权限失败 error: %v", err)

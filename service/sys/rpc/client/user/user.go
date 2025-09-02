@@ -14,8 +14,8 @@ import (
 )
 
 type (
-	IDReq             = pb.IDReq
-	IDsReq            = pb.IDsReq
+	IDRequest         = pb.IDRequest
+	IDsRequest        = pb.IDsRequest
 	MenuInfo          = pb.MenuInfo
 	MenuInfoList      = pb.MenuInfoList
 	Meta              = pb.Meta
@@ -23,22 +23,22 @@ type (
 	NoDataResponse    = pb.NoDataResponse
 	PageInfo          = pb.PageInfo
 	RoleInfo          = pb.RoleInfo
-	RoleListReq       = pb.RoleListReq
-	RoleListRes       = pb.RoleListRes
+	RoleListRequest   = pb.RoleListRequest
+	RoleListResponse  = pb.RoleListResponse
 	RoleUpdateRequest = pb.RoleUpdateRequest
 	TokenInfo         = pb.TokenInfo
-	TokenInfoReq      = pb.TokenInfoReq
-	TokenInfoRes      = pb.TokenInfoRes
+	TokenInfoRequest  = pb.TokenInfoRequest
+	TokenInfoResponse = pb.TokenInfoResponse
 	UserInfo          = pb.UserInfo
-	UserInfoRes       = pb.UserInfoRes
-	UsernameReq       = pb.UsernameReq
-	UsernameRes       = pb.UsernameRes
+	UserInfoResponse  = pb.UserInfoResponse
+	UsernameRequest   = pb.UsernameRequest
+	UsernameResponse  = pb.UsernameResponse
 
 	User interface {
 		// 根据用户名获取用户详情
-		GetUserByUsername(ctx context.Context, in *UsernameReq, opts ...grpc.CallOption) (*UsernameRes, error)
+		GetUserByUsername(ctx context.Context, in *UsernameRequest, opts ...grpc.CallOption) (*UsernameResponse, error)
 		// 获取用户详细信息
-		GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error)
+		GetUserInfoById(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 	}
 
 	defaultUser struct {
@@ -53,13 +53,13 @@ func NewUser(cli zrpc.Client) User {
 }
 
 // 根据用户名获取用户详情
-func (m *defaultUser) GetUserByUsername(ctx context.Context, in *UsernameReq, opts ...grpc.CallOption) (*UsernameRes, error) {
+func (m *defaultUser) GetUserByUsername(ctx context.Context, in *UsernameRequest, opts ...grpc.CallOption) (*UsernameResponse, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.GetUserByUsername(ctx, in, opts...)
 }
 
 // 获取用户详细信息
-func (m *defaultUser) GetUserInfoById(ctx context.Context, in *IDReq, opts ...grpc.CallOption) (*UserInfoRes, error) {
+func (m *defaultUser) GetUserInfoById(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.GetUserInfoById(ctx, in, opts...)
 }

@@ -26,7 +26,7 @@ func NewDeleteRoleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 // 删除角色信息
-func (l *DeleteRoleLogic) DeleteRole(in *pb.IDsReq) (*pb.NoDataResponse, error) {
+func (l *DeleteRoleLogic) DeleteRole(in *pb.IDsRequest) (*pb.NoDataResponse, error) {
 	// 先查找角色id有没有相关的用户信息  有就不能删除
 	userIds, err := l.svcCtx.UserRolesModel.FindUserIdsByRoleIds(l.ctx, in.Ids)
 	fmt.Println("-------------- userIds", userIds)

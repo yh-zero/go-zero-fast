@@ -14,8 +14,8 @@ import (
 )
 
 type (
-	IDReq             = pb.IDReq
-	IDsReq            = pb.IDsReq
+	IDRequest         = pb.IDRequest
+	IDsRequest        = pb.IDsRequest
 	MenuInfo          = pb.MenuInfo
 	MenuInfoList      = pb.MenuInfoList
 	Meta              = pb.Meta
@@ -23,20 +23,20 @@ type (
 	NoDataResponse    = pb.NoDataResponse
 	PageInfo          = pb.PageInfo
 	RoleInfo          = pb.RoleInfo
-	RoleListReq       = pb.RoleListReq
-	RoleListRes       = pb.RoleListRes
+	RoleListRequest   = pb.RoleListRequest
+	RoleListResponse  = pb.RoleListResponse
 	RoleUpdateRequest = pb.RoleUpdateRequest
 	TokenInfo         = pb.TokenInfo
-	TokenInfoReq      = pb.TokenInfoReq
-	TokenInfoRes      = pb.TokenInfoRes
+	TokenInfoRequest  = pb.TokenInfoRequest
+	TokenInfoResponse = pb.TokenInfoResponse
 	UserInfo          = pb.UserInfo
-	UserInfoRes       = pb.UserInfoRes
-	UsernameReq       = pb.UsernameReq
-	UsernameRes       = pb.UsernameRes
+	UserInfoResponse  = pb.UserInfoResponse
+	UsernameRequest   = pb.UsernameRequest
+	UsernameResponse  = pb.UsernameResponse
 
 	Token interface {
 		// 生成Token
-		CreateToken(ctx context.Context, in *TokenInfoReq, opts ...grpc.CallOption) (*TokenInfoRes, error)
+		CreateToken(ctx context.Context, in *TokenInfoRequest, opts ...grpc.CallOption) (*TokenInfoResponse, error)
 	}
 
 	defaultToken struct {
@@ -51,7 +51,7 @@ func NewToken(cli zrpc.Client) Token {
 }
 
 // 生成Token
-func (m *defaultToken) CreateToken(ctx context.Context, in *TokenInfoReq, opts ...grpc.CallOption) (*TokenInfoRes, error) {
+func (m *defaultToken) CreateToken(ctx context.Context, in *TokenInfoRequest, opts ...grpc.CallOption) (*TokenInfoResponse, error) {
 	client := pb.NewTokenClient(m.cli.Conn())
 	return client.CreateToken(ctx, in, opts...)
 }

@@ -21,6 +21,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.Authority},
 			[]rest.Route{
 				{
+					// 获取菜单列表
+					Method:  http.MethodGet,
+					Path:    "/menu/list",
+					Handler: menu.GetMenuListHandler(serverCtx),
+				},
+				{
 					// 获取菜单列表 -- 对应的用户角色的权限
 					Method:  http.MethodGet,
 					Path:    "/menu/role/list",

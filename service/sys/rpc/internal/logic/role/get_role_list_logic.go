@@ -24,7 +24,7 @@ func NewGetRoleListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetRo
 }
 
 // 获取角色列表
-func (l *GetRoleListLogic) GetRoleList(in *pb.RoleListReq) (*pb.RoleListRes, error) {
+func (l *GetRoleListLogic) GetRoleList(in *pb.RoleListRequest) (*pb.RoleListResponse, error) {
 	fmt.Println("-------------- GetRoleList -------------", in)
 	cursor, total, err := l.svcCtx.SysRolesModel.FindPageByName(l.ctx, in.Name, in.PageInfo.PageNo, in.PageInfo.PageSize)
 	if err != nil {
@@ -32,7 +32,7 @@ func (l *GetRoleListLogic) GetRoleList(in *pb.RoleListReq) (*pb.RoleListRes, err
 		return nil, err
 	}
 
-	resp := pb.RoleListRes{}
+	resp := pb.RoleListResponse{}
 	resp.Total = total
 	for _, roles := range cursor {
 		resp.RoleInfo = append(resp.RoleInfo, &pb.RoleInfo{

@@ -31,7 +31,7 @@ func (l *DeleteRoleLogic) DeleteRole(req *types.IDsReq) (resp *types.MessageRes,
 		logx.Errorf("ids error: %v", err)
 		return nil, xerr.NewErrMsg("ids 不能为空")
 	}
-	_, err = l.svcCtx.RoleRpc.DeleteRole(l.ctx, &pb.IDsReq{
+	_, err = l.svcCtx.RoleRpc.DeleteRole(l.ctx, &pb.IDsRequest{
 		Ids: req.Ids,
 	})
 	if err != nil {

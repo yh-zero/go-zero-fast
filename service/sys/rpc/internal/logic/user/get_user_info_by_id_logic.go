@@ -26,7 +26,7 @@ func NewGetUserInfoByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 // 获取用户详细信息
-func (l *GetUserInfoByIdLogic) GetUserInfoById(in *pb.IDReq) (*pb.UserInfoRes, error) {
+func (l *GetUserInfoByIdLogic) GetUserInfoById(in *pb.IDRequest) (*pb.UserInfoResponse, error) {
 	userInfo, err := l.svcCtx.SysUsersModel.FindOne(l.ctx, in.Id)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("GetUserInfoById 没有相关用户信息 error: %v", err)
@@ -55,7 +55,7 @@ func (l *GetUserInfoByIdLogic) GetUserInfoById(in *pb.IDReq) (*pb.UserInfoRes, e
 		return nil, err
 	}
 
-	return &pb.UserInfoRes{
+	return &pb.UserInfoResponse{
 		UserInfo: &pb.UserInfo{
 			Id:             userInfo.Id,
 			CreatedAt:      uint64(userInfo.CreatedAt.UnixMilli()),

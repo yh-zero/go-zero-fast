@@ -24,13 +24,13 @@ func NewUserServer(svcCtx *svc.ServiceContext) *UserServer {
 }
 
 // 根据用户名获取用户详情
-func (s *UserServer) GetUserByUsername(ctx context.Context, in *pb.UsernameReq) (*pb.UsernameRes, error) {
+func (s *UserServer) GetUserByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb.UsernameResponse, error) {
 	l := userlogic.NewGetUserByUsernameLogic(ctx, s.svcCtx)
 	return l.GetUserByUsername(in)
 }
 
 // 获取用户详细信息
-func (s *UserServer) GetUserInfoById(ctx context.Context, in *pb.IDReq) (*pb.UserInfoRes, error) {
+func (s *UserServer) GetUserInfoById(ctx context.Context, in *pb.IDRequest) (*pb.UserInfoResponse, error) {
 	l := userlogic.NewGetUserInfoByIdLogic(ctx, s.svcCtx)
 	return l.GetUserInfoById(in)
 }

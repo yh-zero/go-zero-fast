@@ -54,7 +54,12 @@ type MenuInfo struct {
 	Permission  string `json:"permission,optional"`  // 权限标识
 }
 
-type MenuListRes struct {
+type MenuInfoListResponse struct {
+	List  []MenuInfo `json:"list"`
+	Total uint64     `json:"total"`
+}
+
+type MenuListResponse struct {
 	List []MenuInfo `json:"list"`
 }
 

@@ -42,7 +42,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 		}
 	}
 
-	userInfoRPC, err := l.svcCtx.UserRPC.GetUserByUsername(l.ctx, &pb.UsernameReq{Username: req.Username})
+	userInfoRPC, err := l.svcCtx.UserRPC.GetUserByUsername(l.ctx, &pb.UsernameRequest{Username: req.Username})
 	fmt.Println("======== userInfoRPC", userInfoRPC)
 	fmt.Println("======== err", err)
 	if err != nil {
@@ -81,7 +81,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 	// 把token 存到数据库 用于记录
 	// l.svcCtx.Config.JwtAuth.AccessExpire = 864000
 	expiredAt := time.Now().Add(time.Second * time.Duration(l.svcCtx.Config.JwtAuth.AccessExpire)).UnixMilli()
-	_, err = l.svcCtx.TokenRPC.CreateToken(l.ctx, &pb.TokenInfoReq{
+	_, err = l.svcCtx.TokenRPC.CreateToken(l.ctx, &pb.TokenInfoRequest{
 		TokenInfo: &pb.TokenInfo{
 			Status:    userInfoRPC.UserInfo.Status, // 暂时用 用户的状态 输入
 			UserId:    userInfoRPC.UserInfo.Id,

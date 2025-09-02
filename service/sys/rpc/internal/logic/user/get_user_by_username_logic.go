@@ -28,7 +28,7 @@ func NewGetUserByUsernameLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 // 根据用户名获取用户详情
-func (l *GetUserByUsernameLogic) GetUserByUsername(in *pb.UsernameReq) (*pb.UsernameRes, error) {
+func (l *GetUserByUsernameLogic) GetUserByUsername(in *pb.UsernameRequest) (*pb.UsernameResponse, error) {
 
 	userInfo, err := l.svcCtx.SysUsersModel.FindOneByUsername(l.ctx, in.Username)
 	if err != nil {
@@ -56,7 +56,7 @@ func (l *GetUserByUsernameLogic) GetUserByUsername(in *pb.UsernameReq) (*pb.User
 		roleCodes = codes
 	}
 
-	return &pb.UsernameRes{
+	return &pb.UsernameResponse{
 		UserInfo: &pb.UserInfo{
 			Id:           userInfo.Id,
 			CreatedAt:    uint64(userInfo.CreatedAt.UnixMilli()),

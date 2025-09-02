@@ -24,7 +24,13 @@ func NewMenuServer(svcCtx *svc.ServiceContext) *MenuServer {
 }
 
 // 根据角色id 获取菜单 -- 目前系统用这个 可以方便用户切换角色获取不一样的菜单
-func (s *MenuServer) GetMenuListByRoleId(ctx context.Context, in *pb.IDReq) (*pb.MenuInfoList, error) {
+func (s *MenuServer) GetMenuListByRoleId(ctx context.Context, in *pb.IDRequest) (*pb.MenuInfoList, error) {
 	l := menulogic.NewGetMenuListByRoleIdLogic(ctx, s.svcCtx)
 	return l.GetMenuListByRoleId(in)
+}
+
+// 获取菜单列表
+func (s *MenuServer) GetMenuList(ctx context.Context, in *pb.PageInfo) (*pb.MenuInfoList, error) {
+	l := menulogic.NewGetMenuListLogic(ctx, s.svcCtx)
+	return l.GetMenuList(in)
 }

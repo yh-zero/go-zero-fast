@@ -29,7 +29,7 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserInfoLogic) GetUserInfo() (resp *types.UserBaseIDInfoRes, err error) {
 	jwtUserId := ctxJwt.GetJwtDataUserId(l.ctx)
-	userInfoRpc, err := l.svcCtx.UserRPC.GetUserInfoById(l.ctx, &pb.IDReq{Id: jwtUserId})
+	userInfoRpc, err := l.svcCtx.UserRPC.GetUserInfoById(l.ctx, &pb.IDRequest{Id: jwtUserId})
 	fmt.Println("========= userInfoRpc", userInfoRpc)
 	if err != nil {
 		return nil, err

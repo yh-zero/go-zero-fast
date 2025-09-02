@@ -24,7 +24,7 @@ func NewRoleServer(svcCtx *svc.ServiceContext) *RoleServer {
 }
 
 // 获取角色列表
-func (s *RoleServer) GetRoleList(ctx context.Context, in *pb.RoleListReq) (*pb.RoleListRes, error) {
+func (s *RoleServer) GetRoleList(ctx context.Context, in *pb.RoleListRequest) (*pb.RoleListResponse, error) {
 	l := rolelogic.NewGetRoleListLogic(ctx, s.svcCtx)
 	return l.GetRoleList(in)
 }
@@ -36,7 +36,7 @@ func (s *RoleServer) CreateRole(ctx context.Context, in *pb.RoleInfo) (*pb.NoDat
 }
 
 // 删除角色信息
-func (s *RoleServer) DeleteRole(ctx context.Context, in *pb.IDsReq) (*pb.NoDataResponse, error) {
+func (s *RoleServer) DeleteRole(ctx context.Context, in *pb.IDsRequest) (*pb.NoDataResponse, error) {
 	l := rolelogic.NewDeleteRoleLogic(ctx, s.svcCtx)
 	return l.DeleteRole(in)
 }
@@ -48,7 +48,7 @@ func (s *RoleServer) UpdateRole(ctx context.Context, in *pb.RoleUpdateRequest) (
 }
 
 // 通过ID获取角色
-func (s *RoleServer) GetRoleById(ctx context.Context, in *pb.IDReq) (*pb.NoDataResponse, error) {
+func (s *RoleServer) GetRoleById(ctx context.Context, in *pb.IDRequest) (*pb.NoDataResponse, error) {
 	l := rolelogic.NewGetRoleByIdLogic(ctx, s.svcCtx)
 	return l.GetRoleById(in)
 }
